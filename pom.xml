@@ -17,6 +17,11 @@
             <artifactId>JTdLib</artifactId>
             <version>v0.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>ru.skogmark</groupId>
+            <artifactId>skogmark-common</artifactId>
+            <version>1.4</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
