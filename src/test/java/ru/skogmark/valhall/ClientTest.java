@@ -3,28 +3,19 @@ package ru.skogmark.valhall;
 import it.ernytech.tdbot.EasyClient;
 import it.ernytech.tdlib.Response;
 import it.ernytech.tdlib.TdApi;
+import it.ernytech.tdlib.utils.LoadLibrary;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.skogmark.common.http.HttpMethod;
-import ru.skogmark.common.http.HttpRequestHeader;
-import ru.skogmark.common.http.JacksonObjectMapperSerializerAdapter;
-import ru.skogmark.common.http.SerializerAwareHttpRequest;
 
-import static org.junit.Assert.assertEquals;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
-public class MainControllerTest {
+public class ClientTest {
     @Test
-    public void testPing() throws Exception {
-        HttpRequestHeader header = new HttpRequestHeader();
-        header.setHttpMethod(HttpMethod.GET);
-        header.setUrl("http://localhost:8185/ping");
-        String response = new SerializerAwareHttpRequest(new JacksonObjectMapperSerializerAdapter())
-                .makeRequest(header, null);
-        assertEquals("ok", response);
+    public void name() throws Throwable {
+        System.out.println(LoadLibrary.getOs());
+        LoadLibrary.load("libeay32");
+        LoadLibrary.load("ssleay32");
+        LoadLibrary.load("zlib1");
+        Thread.sleep(1000);
+        LoadLibrary.load("tdjni");
+
     }
 
     @Test
