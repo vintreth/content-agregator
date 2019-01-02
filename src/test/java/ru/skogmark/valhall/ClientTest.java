@@ -7,7 +7,7 @@ import it.ernytech.tdlib.utils.LoadLibrary;
 import org.junit.Test;
 
 public class ClientTest {
-    @Test
+//    @Test
     public void name() throws Throwable {
         System.out.println(LoadLibrary.getOs());
         LoadLibrary.load("libeay32");
@@ -18,7 +18,7 @@ public class ClientTest {
 
     }
 
-    @Test
+//    @Test
     public void testConnection() throws Exception {
         TdApi.TdlibParameters parameters = new TdApi.TdlibParameters();
         parameters.databaseDirectory = "tdlib";
