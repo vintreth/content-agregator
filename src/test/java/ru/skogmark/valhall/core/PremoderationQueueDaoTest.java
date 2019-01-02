@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import ru.skogmark.valhall.core.premoderation.PremoderationQueueDao;
+import ru.skogmark.valhall.core.premoderation.UnmoderatedPost;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -16,8 +18,8 @@ public class PremoderationQueueDaoTest {
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
         PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate);
         UnmoderatedPost post = UnmoderatedPost.builder()
-                .setText("test text of post with some info")
-                .setImageId(12345L)
+                .text("test text of post with some info")
+                .imageId(12345L)
                 .build();
 
         dao.insertPost(post);

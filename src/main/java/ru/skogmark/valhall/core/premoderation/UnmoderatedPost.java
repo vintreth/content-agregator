@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core;
+package ru.skogmark.valhall.core.premoderation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,10 +57,10 @@ public class UnmoderatedPost {
 
     public Builder copy() {
         return builder()
-                .setId(id)
-                .setText(text)
-                .setImageId(imageId)
-                .setCreatedDt(createdDt);
+                .id(id)
+                .text(text)
+                .imageId(imageId)
+                .createdDt(createdDt);
     }
 
     public static Builder builder() {
@@ -76,22 +76,22 @@ public class UnmoderatedPost {
         private Builder() {
         }
 
-        public Builder setId(Long id) {
+        public Builder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder setText(String text) {
+        public Builder text(String text) {
             this.text = text;
             return this;
         }
 
-        public Builder setImageId(Long imageId) {
+        public Builder imageId(Long imageId) {
             this.imageId = imageId;
             return this;
         }
 
-        public Builder setCreatedDt(ZonedDateTime createdDt) {
+        public Builder createdDt(ZonedDateTime createdDt) {
             this.createdDt = createdDt;
             return this;
         }

@@ -1,16 +1,14 @@
-package ru.skogmark.valhall.core;
+package ru.skogmark.valhall.core.premoderation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import javax.annotation.Nonnull;
 
 import static java.util.Objects.requireNonNull;
 
-@Repository
 public class PremoderationQueueDao {
     private static final Logger log = LoggerFactory.getLogger(PremoderationQueueDao.class);
 
@@ -31,6 +29,7 @@ public class PremoderationQueueDao {
                         .addValue("text", post.getText().orElse(null))
                         .addValue("imageId", post.getImageId().orElse(null)),
                 Long.class);
-        return post.copy().setId(id).build();
+        log.info("Post inserted: id={}", id);
+        return post.copy().id(id).build();
     }
 }
