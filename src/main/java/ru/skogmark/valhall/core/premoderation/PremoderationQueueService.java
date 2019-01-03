@@ -2,29 +2,30 @@ package ru.skogmark.valhall.core.premoderation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class PremoderationQueue {
-    private static final Logger log = LoggerFactory.getLogger(PremoderationQueue.class);
+@Service
+public class PremoderationQueueService {
+    private static final Logger log = LoggerFactory.getLogger(PremoderationQueueService.class);
 
     private final TransactionTemplate transactionTemplate;
     private final PremoderationQueueDao premoderationQueueDao;
 
-    public PremoderationQueue(@Nonnull TransactionTemplate transactionTemplate,
-                              @Nonnull PremoderationQueueDao premoderationQueueDao) {
+    public PremoderationQueueService(@Nonnull TransactionTemplate transactionTemplate,
+                                     @Nonnull PremoderationQueueDao premoderationQueueDao) {
         this.transactionTemplate = requireNonNull(transactionTemplate, "transactionTemplate");
         this.premoderationQueueDao = requireNonNull(premoderationQueueDao, "premoderationQueueDao");
     }
 
-    public void enqueuePosts(List<UnmoderatedPost> posts) {
-        log.info("enqueuePosts(): posts={}", posts);
+    public void enqueuePost(UnmoderatedPost post) {
+        log.info("enqueuePost(): post={}", post);
         transactionTemplate.execute(transactionStatus -> {
-            posts.forEach(premoderationQueueDao::insertPost);
+            premoderationQueueDao.insertPost(post);
             return null;
         });
     }

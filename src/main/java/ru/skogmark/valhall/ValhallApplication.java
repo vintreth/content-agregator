@@ -20,6 +20,8 @@ import ru.skogmark.valhall.config.DataSourceConfiguration;
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootApplication
 public class ValhallApplication {
@@ -76,6 +78,14 @@ public class ValhallApplication {
 
     @Bean
     ExecutorService outputRequestExecutor(ApplicationConfiguration applicationConfiguration) {
-        return Executors.newFixedThreadPool(applicationConfiguration.getOutputRequestThreadPoolSize());
+        return Executors.newFixedThreadPool(applicationConfiguration.getOutputRequestThreadPoolSize(),
+                new ThreadFactory() {
+                    private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+                    @Override
+                    public Thread newThread(Runnable runnable) {
+                        return new Thread(runnable, "output-request-" + threadNumber.getAndIncrement());
+                    }
+                });
     }
 }
