@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core.content.source;
+package ru.skogmark.valhall.core.content;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

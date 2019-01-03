@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core.content.source;
+package ru.skogmark.valhall.core.content;
 
 import javax.annotation.Nonnull;
 
