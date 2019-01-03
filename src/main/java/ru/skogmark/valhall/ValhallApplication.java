@@ -11,9 +11,15 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.skogmark.common.config.ConfigurationLoader;
+import ru.skogmark.common.config.Configurations;
 import ru.skogmark.common.migration.MigrationService;
+import ru.skogmark.valhall.config.ApplicationConfiguration;
+import ru.skogmark.valhall.config.DataSourceConfiguration;
 
 import javax.sql.DataSource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication
 public class ValhallApplication {
@@ -24,12 +30,12 @@ public class ValhallApplication {
     }
 
     @Bean
-    DataSource postgresDataSource() {
+    DataSource postgresDataSource(DataSourceConfiguration dataSourceConfiguration) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://skogmark.ru:5432/postgres"); // todo
-        dataSource.setUsername("generator"); // todo
-        dataSource.setPassword("generator"); // todo
+        dataSource.setUrl(dataSourceConfiguration.getUrl());
+        dataSource.setUsername(dataSourceConfiguration.getUsername());
+        dataSource.setPassword(dataSourceConfiguration.getPassword());
         return dataSource;
     }
 
@@ -58,5 +64,15 @@ public class ValhallApplication {
                                               namedParameterJdbcTemplate) {
         return new MigrationService(transactionTemplate, namedParameterJdbcTemplate,
                 Sets.newHashSet("premoderation-queue.table.sql"));
+    }
+
+    @Bean
+    ConfigurationLoader configurationLoader() {
+        return Configurations.newXmlConfigurationLoader();
+    }
+
+    @Bean
+    ExecutorService outputRequestExecutor(ApplicationConfiguration applicationConfiguration) {
+        return Executors.newFixedThreadPool(applicationConfiguration.getOutputRequestThreadPoolSize());
     }
 }

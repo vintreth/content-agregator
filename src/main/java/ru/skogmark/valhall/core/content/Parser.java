@@ -1,6 +1,7 @@
 package ru.skogmark.valhall.core.content;
 
 public interface Parser {
-    AuthorizationMeta auth();
+    void auth(ParserAuthorizationListener listener);
+
     Content parse(long offset);
 }

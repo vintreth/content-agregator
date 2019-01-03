@@ -28,7 +28,7 @@ public class ContentService {
     public List<Content> getContents() {
         log.info("Obtaining contents from all sources: name={}", name);
         return sourceServices.stream()
-                .map(SourceService::parseNext)
+                .map(SourceService::getContent)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
