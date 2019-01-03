@@ -32,11 +32,24 @@ public class SourceDao {
 
     public Optional<AuthorizationMeta> getAuthorizationMeta(int sourceId) {
         log.info("getAuthorizationMeta(): sourceId={}", sourceId);
-        return Optional.empty(); // todo
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+                "select source_id, authorization_token from authorization_meta where source_id = :sourceId",
+                new MapSqlParameterSource()
+                        .addValue("sourceId", sourceId),
+                (ps, rowNum) -> {
+                    int storedSourceId = ps.getInt("source_id");
+                    return AuthorizationMeta.of(() -> storedSourceId, ps.getString("authorization_token"));
+                }));
     }
 
     public void updateAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
         log.info("updateAuthorizationMeta(): authorizationMeta={}", authorizationMeta);
-        // todo
+        int affectedRows = jdbcTemplate.update(
+                "update authorization_meta set authorization_token = :authorizationToken " +
+                        "where source_id = :sourceId",
+                new MapSqlParameterSource()
+                        .addValue("authorizationToken", authorizationMeta.getAuthorizationToken())
+                        .addValue("sourceId", authorizationMeta.getSource().getId()));
+        log.info("AuthorizationMeta updated: affectedRows={}, authorizationMeta={}", affectedRows, authorizationMeta);
     }
 }

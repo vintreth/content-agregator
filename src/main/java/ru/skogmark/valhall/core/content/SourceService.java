@@ -29,7 +29,6 @@ public class SourceService {
         log.info("getContent(): source={}", source);
         parser.auth(authorizationMeta -> {
             insertOrUpdateAuthorizationMeta(authorizationMeta);
-
         });
         return Optional.empty();
     }

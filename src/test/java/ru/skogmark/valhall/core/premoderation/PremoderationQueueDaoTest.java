@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core;
+package ru.skogmark.valhall.core.premoderation;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

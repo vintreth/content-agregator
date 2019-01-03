@@ -63,7 +63,9 @@ public class ValhallApplication {
                                       @Qualifier("postgresNamedParameterJdbcTemplate") NamedParameterJdbcTemplate
                                               namedParameterJdbcTemplate) {
         return new MigrationService(transactionTemplate, namedParameterJdbcTemplate,
-                Sets.newHashSet("premoderation-queue.table.sql"));
+                Sets.newHashSet(
+                        "premoderation-queue.table.sql",
+                        "authorization-meta.table.sql"));
     }
 
     @Bean
