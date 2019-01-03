@@ -1,0 +1,16 @@
+[Unit]
+Description=valhall
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/valhall/bin
+ExecStart=/bin/sh /opt/valhall/bin/bootstrap.sh
+
+User=svip
+Group=svip
+TimeoutSec=300
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

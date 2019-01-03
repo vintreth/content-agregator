@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.skogmark</groupId>
         <artifactId>skogmark-boot</artifactId>
-        <version>1.4</version>
+        <version>1.4.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>skogmark-valhall</artifactId>
@@ -33,4 +33,11 @@
             <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
