@@ -1,4 +1,6 @@
-package ru.skogmark.valhall.core.content;
+package ru.skogmark.valhall.core.content.parser;
+
+import ru.skogmark.valhall.core.content.Content;
 
 public interface Parser {
     void auth(ParserAuthorizationListener listener);

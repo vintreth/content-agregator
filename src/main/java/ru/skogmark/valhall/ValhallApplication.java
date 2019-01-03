@@ -64,8 +64,9 @@ public class ValhallApplication {
                                               namedParameterJdbcTemplate) {
         return new MigrationService(transactionTemplate, namedParameterJdbcTemplate,
                 Sets.newHashSet(
-                        "premoderation-queue.table.sql",
-                        "authorization-meta.table.sql"));
+                        "premoderation_queue.table.sql",
+                        "source_offset.table.sql",
+                        "authorization_meta.table.sql"));
     }
 
     @Bean

@@ -1,8 +1,10 @@
-package ru.skogmark.valhall.core.content;
+package ru.skogmark.valhall.core.content.source;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.skogmark.valhall.core.content.Content;
+import ru.skogmark.valhall.core.content.parser.Parser;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -29,6 +31,7 @@ public class SourceService {
         log.info("getContent(): source={}", source);
         parser.auth(authorizationMeta -> {
             insertOrUpdateAuthorizationMeta(authorizationMeta);
+            // todo get offset and parse()
         });
         return Optional.empty();
     }

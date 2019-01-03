@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core.content;
+package ru.skogmark.valhall.core.content.source;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +32,16 @@ public class SourceDao {
 
     public Optional<AuthorizationMeta> getAuthorizationMeta(int sourceId) {
         log.info("getAuthorizationMeta(): sourceId={}", sourceId);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
+        AuthorizationMeta authorizationMeta = jdbcTemplate.queryForObject(
                 "select source_id, authorization_token from authorization_meta where source_id = :sourceId",
                 new MapSqlParameterSource()
                         .addValue("sourceId", sourceId),
                 (ps, rowNum) -> {
                     int storedSourceId = ps.getInt("source_id");
                     return AuthorizationMeta.of(() -> storedSourceId, ps.getString("authorization_token"));
-                }));
+                });
+        log.info("AuthorizationMeta obtained: sourceId={}, authorizationMeta={}", sourceId, authorizationMeta);
+        return Optional.ofNullable(authorizationMeta);
     }
 
     public void updateAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
@@ -51,5 +53,16 @@ public class SourceDao {
                         .addValue("authorizationToken", authorizationMeta.getAuthorizationToken())
                         .addValue("sourceId", authorizationMeta.getSource().getId()));
         log.info("AuthorizationMeta updated: affectedRows={}, authorizationMeta={}", affectedRows, authorizationMeta);
+    }
+
+    public Optional<Long> getOffset(int sourceId) {
+        log.info("getOffset(): sourceId={}", sourceId);
+        Long offset = jdbcTemplate.queryForObject(
+                "select offset_value from source_offset where source_id = :sourceId",
+                new MapSqlParameterSource()
+                        .addValue("sourceId", sourceId),
+                Long.class);
+        log.info("Offset obtained: sourceId={}, offset={}", sourceId, offset);
+        return Optional.ofNullable(offset);
     }
 }

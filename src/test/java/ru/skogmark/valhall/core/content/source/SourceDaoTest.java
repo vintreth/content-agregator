@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.core.content;
+package ru.skogmark.valhall.core.content.source;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,5 +54,18 @@ public class SourceDaoTest {
         verify(jdbcTemplate, times(1)).update(any(), captor.capture());
         assertEquals("authorizationToken===", captor.getValue().getValue("authorizationToken"));
         assertEquals(5, captor.getValue().getValue("sourceId"));
+    }
+
+    @Test
+    public void shouldMapParamsCorrectlyWhenGettingOffset() {
+        NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
+        SourceDao sourceDao = new SourceDao(jdbcTemplate);
+
+        sourceDao.getOffset(3);
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(jdbcTemplate, times(1))
+                .queryForObject(any(), captor.capture(), (Class<Long>) any());
+        assertEquals(3, captor.getValue().getValue("sourceId"));
     }
 }
