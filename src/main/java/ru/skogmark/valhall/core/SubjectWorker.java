@@ -3,6 +3,7 @@ package ru.skogmark.valhall.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.skogmark.valhall.core.content.ContentService;
+import ru.skogmark.valhall.core.content.Source;
 import ru.skogmark.valhall.core.premoderation.PremoderationQueueService;
 import ru.skogmark.valhall.core.premoderation.UnmoderatedPost;
 import ru.skogmark.valhall.image.Image;
@@ -21,15 +22,18 @@ public class SubjectWorker {
     private static final Logger log = LoggerFactory.getLogger(SubjectWorker.class);
 
     private final ScheduledExecutorService subjectWorkerExecutor;
+    private final SubjectService subjectService;
     private final ContentService contentService;
     private final PremoderationQueueService premoderationQueueService;
     private final ImageDownloadService imageDownloadService;
 
     public SubjectWorker(@Nonnull ScheduledExecutorService subjectWorkerExecutor,
+                         @Nonnull SubjectService subjectService,
                          @Nonnull ContentService contentService,
                          @Nonnull PremoderationQueueService premoderationQueueService,
                          @Nonnull ImageDownloadService imageDownloadService) {
         this.subjectWorkerExecutor = requireNonNull(subjectWorkerExecutor, "subjectWorkerExecutor");
+        this.subjectService = requireNonNull(subjectService, "subjectService");
         this.contentService = requireNonNull(contentService, "contentService");
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
         this.imageDownloadService = requireNonNull(imageDownloadService, "imageDownloadService");
@@ -38,21 +42,24 @@ public class SubjectWorker {
     @PostConstruct
     public void start() {
         log.info("Starting worker");
-        subjectWorkerExecutor.scheduleWithFixedDelay(this::checkTimetableAndExecuteWorker, 0, 1, TimeUnit.SECONDS);
+        subjectWorkerExecutor.scheduleWithFixedDelay(this::doWork, 0, 1, TimeUnit.SECONDS);
     }
 
-    public void checkTimetableAndExecuteWorker() {
-
+    private void doWork() {
+        subjectService.getSubjects().forEach(this::processSubject);
     }
 
-    public void doWork(SubjectContext subjectContext) {
-        log.info("Starting to obtain contents and enqueueing the posts: workerName={}", subjectContext.getName());
-        subjectContext.getSources().forEach(source ->
-                contentService.getContent(source, content -> {
-                    Optional<Image> image = imageDownloadService.downloadAndSave(content.getImageUri());
-                    premoderationQueueService.enqueuePost(buildUnmoderatedPost(content.getText(),
-                            image.flatMap(Image::getId).orElse(null)));
-                }));
+    private void processSubject(Subject subject) {
+        subject.getSources().forEach(this::getContentAndEnqueuePosts);
+    }
+
+    private void getContentAndEnqueuePosts(Source source) {
+        // todo check timetable
+        contentService.parseContent(source, content -> {
+            Optional<Image> image = imageDownloadService.downloadAndSave(content.getImageUri());
+            premoderationQueueService.enqueuePost(buildUnmoderatedPost(content.getText(),
+                    image.flatMap(Image::getId).orElse(null)));
+        });
     }
 
     private static UnmoderatedPost buildUnmoderatedPost(@Nonnull String text, @Nullable Long imageId) {

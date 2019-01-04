@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.skogmark.valhall.core.content.parser.Parser;
-import ru.skogmark.valhall.core.content.parser.ParserContentListener;
 import ru.skogmark.valhall.core.content.parser.ParserFactory;
 
 import javax.annotation.Nonnull;
@@ -27,8 +26,8 @@ public class ContentService {
         this.sourceDao = requireNonNull(sourceDao, "sourceDao");
     }
 
-    public void getContent(Source source, ParserContentListener parserContentListener) {
-        log.info("getContent(): source={}", source);
+    public void parseContent(Source source, ParsedContentListener parsedContentListener) {
+        log.info("parseContent(): source={}", source);
         Parser parser = parserFactory.getParser(source);
         parser.auth(getAuthorizationMeta(source.getId()).orElse(null),
                 authorizationMeta -> {
@@ -36,7 +35,7 @@ public class ContentService {
                     long offset = getOffset(source.getId()).orElse(0L);
                     parser.parse(offset).ifPresent(content -> {
                         log.info("Content obtained: source={}, content={}", source, content);
-                        parserContentListener.onContentObtained(content);
+                        parsedContentListener.onContentParsed(content);
                     });
                 });
     }
