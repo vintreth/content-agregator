@@ -10,23 +10,39 @@ import ru.skogmark.valhall.image.ImageDownloadService;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.requireNonNull;
 
 public class SubjectWorker {
     private static final Logger log = LoggerFactory.getLogger(SubjectWorker.class);
 
+    private final ScheduledExecutorService subjectWorkerExecutor;
     private final ContentService contentService;
     private final PremoderationQueueService premoderationQueueService;
     private final ImageDownloadService imageDownloadService;
 
-    public SubjectWorker(@Nonnull ContentService contentService,
+    public SubjectWorker(@Nonnull ScheduledExecutorService subjectWorkerExecutor,
+                         @Nonnull ContentService contentService,
                          @Nonnull PremoderationQueueService premoderationQueueService,
                          @Nonnull ImageDownloadService imageDownloadService) {
+        this.subjectWorkerExecutor = requireNonNull(subjectWorkerExecutor, "subjectWorkerExecutor");
         this.contentService = requireNonNull(contentService, "contentService");
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
         this.imageDownloadService = requireNonNull(imageDownloadService, "imageDownloadService");
+    }
+
+    @PostConstruct
+    public void start() {
+        log.info("Starting worker");
+        subjectWorkerExecutor.scheduleWithFixedDelay(this::checkTimetableAndExecuteWorker, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public void checkTimetableAndExecuteWorker() {
+
     }
 
     public void doWork(SubjectContext subjectContext) {

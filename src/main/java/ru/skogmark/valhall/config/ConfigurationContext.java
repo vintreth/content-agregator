@@ -13,6 +13,6 @@ public class ConfigurationContext {
 
     @Bean
     DataSourceConfiguration datasourceConfiguration(ConfigurationLoader configurationLoader) {
-        return configurationLoader.loadConfiguration(DataSourceConfiguration.class, "dataSource.cfg.xml");
+        return configurationLoader.loadConfiguration(DataSourceConfiguration.class, "data-source.cfg.xml");
     }
 }
