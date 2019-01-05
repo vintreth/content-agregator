@@ -69,6 +69,14 @@ public class SubjectsConfiguration {
         @XmlElement
         private Timetable timetable;
 
+        public int getId() {
+            return id;
+        }
+
+        public int getParsingLimit() {
+            return parsingLimit;
+        }
+
         public Timetable getTimetable() {
             return timetable;
         }

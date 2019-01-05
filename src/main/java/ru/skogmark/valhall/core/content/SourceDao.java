@@ -27,7 +27,7 @@ class SourceDao {
         jdbcTemplate.update("insert into authorization_meta (source_id, authorization_token) values " +
                         "(:sourceId, :authorizationToken)",
                 new MapSqlParameterSource()
-                        .addValue("sourceId", authorizationMeta.getSource().getId())
+                        .addValue("sourceId", authorizationMeta.getSourceId())
                         .addValue("authorizationToken", authorizationMeta.getAuthorizationToken()));
         log.info("AuthorizationMeta inserted: authorizationMeta={}", authorizationMeta);
     }
@@ -40,7 +40,7 @@ class SourceDao {
                         .addValue("sourceId", sourceId),
                 (ps, rowNum) -> {
                     int storedSourceId = ps.getInt("source_id");
-                    return AuthorizationMeta.of(() -> storedSourceId, ps.getString("authorization_token"));
+                    return AuthorizationMeta.of(storedSourceId, ps.getString("authorization_token"));
                 });
         log.info("AuthorizationMeta obtained: sourceId={}, authorizationMeta={}", sourceId, authorizationMeta);
         return Optional.ofNullable(authorizationMeta);
@@ -53,7 +53,7 @@ class SourceDao {
                         "where source_id = :sourceId",
                 new MapSqlParameterSource()
                         .addValue("authorizationToken", authorizationMeta.getAuthorizationToken())
-                        .addValue("sourceId", authorizationMeta.getSource().getId()));
+                        .addValue("sourceId", authorizationMeta.getSourceId()));
         log.info("AuthorizationMeta updated: affectedRows={}, authorizationMeta={}", affectedRows, authorizationMeta);
     }
 

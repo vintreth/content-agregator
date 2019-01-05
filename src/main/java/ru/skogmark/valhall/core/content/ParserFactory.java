@@ -4,5 +4,5 @@ import javax.annotation.Nonnull;
 
 public interface ParserFactory {
     @Nonnull
-    Parser getParser(Source source);
+    Parser getParser(int sourceId);
 }

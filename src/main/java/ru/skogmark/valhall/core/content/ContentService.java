@@ -24,15 +24,15 @@ public class ContentService {
         this.sourceDao = requireNonNull(sourceDao, "sourceDao");
     }
 
-    public void parseContent(Source source, ContentListener contentListener) {
-        log.info("parseContent(): source={}", source);
-        Parser parser = parserFactory.getParser(source);
-        parser.auth(getAuthorizationMeta(source.getId()).orElse(null),
+    public void parseContent(int sourceId, ContentListener contentListener) {
+        log.info("parseContent(): sourceId={}", sourceId);
+        Parser parser = parserFactory.getParser(sourceId);
+        parser.auth(getAuthorizationMeta(sourceId).orElse(null),
                 authorizationMeta -> {
-                    insertOrUpdateAuthorizationMeta(authorizationMeta, source.getId());
-                    long offset = getOffset(source.getId()).orElse(0L);
+                    insertOrUpdateAuthorizationMeta(authorizationMeta, sourceId);
+                    long offset = getOffset(sourceId).orElse(0L);
                     parser.parse(offset).ifPresent(content -> {
-                        log.info("Content obtained: source={}, content={}", source, content);
+                        log.info("Content obtained: sourceId={}, content={}", sourceId, content);
                         contentListener.onContentParsed(content);
                     });
                 });

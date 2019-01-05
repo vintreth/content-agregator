@@ -15,7 +15,7 @@ public class SourceDaoTest {
     public void shouldMapParamsCorrectlyWhenInsertingAuthMeta() {
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         SourceDao sourceDao = new SourceDao(jdbcTemplate);
-        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(() -> 8, "authorizationToken===");
+        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(8, "authorizationToken===");
 
         sourceDao.insertAuthorizationMeta(authorizationMeta);
 
@@ -27,7 +27,7 @@ public class SourceDaoTest {
 
     @Test
     public void shouldMapParamsCorrectlyWhenGettingAuthMeta() {
-        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(() -> 10, "authorizationToken===");
+        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(10, "authorizationToken===");
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (RowMapper<AuthorizationMeta>) any()))
                 .thenReturn(authorizationMeta);
@@ -46,7 +46,7 @@ public class SourceDaoTest {
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         when(jdbcTemplate.update(any(), (MapSqlParameterSource) any())).thenReturn(1);
         SourceDao sourceDao = new SourceDao(jdbcTemplate);
-        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(() -> 5, "authorizationToken===");
+        AuthorizationMeta authorizationMeta = AuthorizationMeta.of(5, "authorizationToken===");
 
         sourceDao.updateAuthorizationMeta(authorizationMeta);
 

@@ -6,23 +6,22 @@ import static java.util.Objects.requireNonNull;
 
 class AuthorizationMeta {
     @Nonnull
-    private final Source source;
+    private final int sourceId;
 
     @Nonnull
     private final String authorizationToken;
 
-    private AuthorizationMeta(@Nonnull Source source, @Nonnull String authorizationToken) {
-        this.source = requireNonNull(source, "source");
+    private AuthorizationMeta(int sourceId, @Nonnull String authorizationToken) {
+        this.sourceId = sourceId;
         this.authorizationToken = requireNonNull(authorizationToken, "authorizationToken");
     }
 
-    static AuthorizationMeta of(@Nonnull Source source, @Nonnull String authorizationToken) {
-        return new AuthorizationMeta(source, authorizationToken);
+    static AuthorizationMeta of(int sourceId, @Nonnull String authorizationToken) {
+        return new AuthorizationMeta(sourceId, authorizationToken);
     }
 
-    @Nonnull
-    Source getSource() {
-        return source;
+    int getSourceId() {
+        return sourceId;
     }
 
     @Nonnull
@@ -33,7 +32,7 @@ class AuthorizationMeta {
     @Override
     public String toString() {
         return "AuthorizationMeta{" +
-                "source=" + source +
+                "sourceId=" + sourceId +
                 ", authorizationToken='" + authorizationToken + '\'' +
                 '}';
     }
