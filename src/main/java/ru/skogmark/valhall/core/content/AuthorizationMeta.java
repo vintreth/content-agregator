@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import static java.util.Objects.requireNonNull;
 
-public class AuthorizationMeta {
+class AuthorizationMeta {
     @Nonnull
     private final Source source;
 
@@ -16,17 +16,17 @@ public class AuthorizationMeta {
         this.authorizationToken = requireNonNull(authorizationToken, "authorizationToken");
     }
 
-    public static AuthorizationMeta of(@Nonnull Source source, @Nonnull String authorizationToken) {
+    static AuthorizationMeta of(@Nonnull Source source, @Nonnull String authorizationToken) {
         return new AuthorizationMeta(source, authorizationToken);
     }
 
     @Nonnull
-    public Source getSource() {
+    Source getSource() {
         return source;
     }
 
     @Nonnull
-    public String getAuthorizationToken() {
+    String getAuthorizationToken() {
         return authorizationToken;
     }
 

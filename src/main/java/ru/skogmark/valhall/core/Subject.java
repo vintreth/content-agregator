@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class Subject {
+class Subject {
     @Nonnull
     private final String name;
 
@@ -21,7 +21,7 @@ public class Subject {
         this.sources = Collections.unmodifiableSet(new HashSet<>(requireNonNull(sources, "sources")));
     }
 
-    public static Subject of(@Nonnull String name, @Nonnull Set<Source> sources) {
+    static Subject of(@Nonnull String name, @Nonnull Set<Source> sources) {
         return new Subject(name, sources);
     }
 
@@ -34,12 +34,12 @@ public class Subject {
     }
 
     @Nonnull
-    public String getName() {
+    String getName() {
         return name;
     }
 
     @Nonnull
-    public Set<Source> getSources() {
+    Set<Source> getSources() {
         return sources;
     }
 }

@@ -5,8 +5,8 @@
             <sources>
                 <source id="1" parsingLimit="10">
                     <timetable>
-                        <time>1:00:00</time>
-                        <time>13:00:00</time>
+                        <time>1:00</time>
+                        <time>13:00</time>
                     </timetable>
                 </source>
             </sources>

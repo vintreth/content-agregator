@@ -1,6 +1,4 @@
-package ru.skogmark.valhall.core.content.parser;
-
-import ru.skogmark.valhall.core.content.AuthorizationMeta;
+package ru.skogmark.valhall.core.content;
 
 @FunctionalInterface
 public interface ParserAuthorizationListener {
