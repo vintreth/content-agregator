@@ -5,7 +5,7 @@
     <parent>
         <groupId>ru.skogmark</groupId>
         <artifactId>skogmark-boot</artifactId>
-        <version>1.4.3</version>
+        <version>1.4.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>skogmark-valhall</artifactId>
@@ -21,19 +21,6 @@
             <version>v0.1.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Java-TDLib.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>ru.skogmark</groupId>
-            <artifactId>skogmark-common</artifactId>
-            <version>1.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
     <build>
