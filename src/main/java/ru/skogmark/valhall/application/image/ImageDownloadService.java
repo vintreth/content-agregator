@@ -1,10 +1,9 @@
-package ru.skogmark.valhall.image;
-
-import org.apache.commons.io.FileUtils;
+package ru.skogmark.valhall.application.image;
 
 import java.net.URI;
 import java.util.Optional;
 
+// todo add interface and replace package
 public class ImageDownloadService {
     public Optional<Image> downloadAndSave(URI imageUri) {
 //        FileUtils.copyURLToFile();

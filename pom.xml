@@ -12,7 +12,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>Skogmark-Valhall</name>
     <properties>
-        <app.class>ru.skogmark.valhall.ValhallApplication</app.class>
+        <app.class>ru.skogmark.valhall.application.ValhallApplication</app.class>
     </properties>
     <dependencies>
         <dependency>

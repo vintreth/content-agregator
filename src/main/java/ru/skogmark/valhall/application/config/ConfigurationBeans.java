@@ -1,11 +1,11 @@
-package ru.skogmark.valhall.config;
+package ru.skogmark.valhall.application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.skogmark.common.config.ConfigurationLoader;
 
 @Configuration
-public class ConfigurationContext {
+public class ConfigurationBeans {
     @Bean
     ApplicationConfiguration applicationConfiguration(ConfigurationLoader configurationLoader) {
         return configurationLoader.loadConfiguration(ApplicationConfiguration.class, "app.cfg.xml");

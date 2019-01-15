@@ -1,4 +1,4 @@
-package ru.skogmark.valhall;
+package ru.skogmark.valhall.application;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

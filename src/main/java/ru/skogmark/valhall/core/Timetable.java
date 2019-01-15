@@ -8,18 +8,18 @@ import java.util.Set;
 
 import static java.util.Objects.nonNull;
 
-class Timetable {
+public class Timetable {
     private final Set<LocalTime> times;
 
     private Timetable(@Nullable Set<LocalTime> times) {
         this.times = nonNull(times) ? Collections.unmodifiableSet(new HashSet<>(times)) : Collections.emptySet();
     }
 
-    static Timetable of(@Nullable Set<LocalTime> times) {
+    public static Timetable of(@Nullable Set<LocalTime> times) {
         return new Timetable(times);
     }
 
-    Set<LocalTime> getTimes() {
+    public Set<LocalTime> getTimes() {
         return times;
     }
 

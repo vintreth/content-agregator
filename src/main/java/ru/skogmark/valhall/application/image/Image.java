@@ -1,8 +1,9 @@
-package ru.skogmark.valhall.image;
+package ru.skogmark.valhall.application.image;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+// todo add interface and replace package
 public class Image {
     @Nullable
     private final Long id;

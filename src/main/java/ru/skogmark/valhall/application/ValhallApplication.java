@@ -1,4 +1,4 @@
-package ru.skogmark.valhall;
+package ru.skogmark.valhall.application;
 
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,8 +14,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.skogmark.common.config.ConfigurationLoader;
 import ru.skogmark.common.config.Configurations;
 import ru.skogmark.common.migration.MigrationService;
-import ru.skogmark.valhall.config.ApplicationConfiguration;
-import ru.skogmark.valhall.config.DataSourceConfiguration;
+import ru.skogmark.valhall.application.config.ApplicationConfiguration;
+import ru.skogmark.valhall.application.config.DataSourceConfiguration;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
