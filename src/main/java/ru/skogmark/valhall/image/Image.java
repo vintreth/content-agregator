@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.image;
+package ru.skogmark.valhall.image;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application;
+package ru.skogmark.valhall;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

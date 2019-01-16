@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.channel;
+package ru.skogmark.valhall.channel;
 
 import ru.skogmark.valhall.core.ChannelContext;
 import ru.skogmark.valhall.core.SourceContext;

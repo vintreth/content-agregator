@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.channel;
+package ru.skogmark.valhall.channel;
 
 public enum Channel {
     MEMES(1, "Memes");

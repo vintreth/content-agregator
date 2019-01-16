@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.config;
+package ru.skogmark.valhall.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

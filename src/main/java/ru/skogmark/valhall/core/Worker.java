@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.skogmark.valhall.core.content.ContentService;
 import ru.skogmark.valhall.core.premoderation.PremoderationQueueService;
 import ru.skogmark.valhall.core.premoderation.UnmoderatedPost;
-import ru.skogmark.valhall.application.image.Image;
-import ru.skogmark.valhall.application.image.ImageDownloadService;
+import ru.skogmark.valhall.image.Image;
+import ru.skogmark.valhall.image.ImageDownloadService;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

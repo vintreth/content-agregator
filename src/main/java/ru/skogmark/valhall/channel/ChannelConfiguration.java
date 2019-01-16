@@ -1,16 +1,16 @@
-package ru.skogmark.valhall.application.channel;
+package ru.skogmark.valhall.channel;
 
 import com.google.common.collect.Sets;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.skogmark.valhall.core.ChannelContext;
-import ru.skogmark.valhall.application.source.SourceContextImpl;
 import ru.skogmark.valhall.core.Timetable;
+import ru.skogmark.valhall.source.SourceContextImpl;
 
 import java.time.LocalTime;
 import java.util.Collections;
 
-import static ru.skogmark.valhall.application.channel.Channel.MEMES;
+import static ru.skogmark.valhall.channel.Channel.MEMES;
 
 @Configuration
 public class ChannelConfiguration {

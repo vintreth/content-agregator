@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.image;
+package ru.skogmark.valhall.image;
 
 import java.net.URI;
 import java.util.Optional;

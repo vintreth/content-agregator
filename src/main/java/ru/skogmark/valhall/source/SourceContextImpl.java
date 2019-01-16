@@ -1,4 +1,4 @@
-package ru.skogmark.valhall.application.source;
+package ru.skogmark.valhall.source;
 
 import ru.skogmark.valhall.core.SourceContext;
 import ru.skogmark.valhall.core.Timetable;
