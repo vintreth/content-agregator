@@ -29,11 +29,6 @@ public class ChannelConfiguration {
                         .parsingLimit(10) // todo hardcode
                         .parser(new Parser() {
                             @Override
-                            public int getSourceId() {
-                                return 0;
-                            }
-
-                            @Override
                             public void auth(@Nullable AuthorizationMeta authorizationMeta, @Nonnull ParserAuthorizationListener listener) {
 
                             }
