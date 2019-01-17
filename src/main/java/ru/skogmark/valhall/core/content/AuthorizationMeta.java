@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import static java.util.Objects.requireNonNull;
 
-class AuthorizationMeta {
+public class AuthorizationMeta {
     @Nonnull
     private final int sourceId;
 

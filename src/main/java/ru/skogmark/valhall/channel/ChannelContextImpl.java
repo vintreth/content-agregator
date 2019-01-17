@@ -18,7 +18,7 @@ public class ChannelContextImpl implements ChannelContext {
     private final Set<SourceContext> sourceContexts;
 
     private ChannelContextImpl(@Nonnull Channel channel, @Nonnull Set<SourceContext> sourceContexts) {
-        this.channel = channel;
+        this.channel = requireNonNull(channel, "channel");
         this.sourceContexts = Collections.unmodifiableSet(new HashSet<>(requireNonNull(sourceContexts, "sourceContexts")));
     }
 

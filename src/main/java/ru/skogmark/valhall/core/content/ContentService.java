@@ -2,37 +2,36 @@ package ru.skogmark.valhall.core.content;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.skogmark.valhall.core.SourceContext;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
+@Service
 public class ContentService {
     private static final Logger log = LoggerFactory.getLogger(ContentService.class);
 
-    private final ParserFactory parserFactory;
     private final TransactionTemplate transactionTemplate;
     private final SourceDao sourceDao;
 
-    public ContentService(@Nonnull ParserFactory parserFactory,
-                          @Nonnull TransactionTemplate transactionTemplate,
+    public ContentService(@Nonnull TransactionTemplate transactionTemplate,
                           @Nonnull SourceDao sourceDao) {
-        this.parserFactory = requireNonNull(parserFactory, "parserFactory");
         this.transactionTemplate = requireNonNull(transactionTemplate, "transactionTemplate");
         this.sourceDao = requireNonNull(sourceDao, "sourceDao");
     }
 
-    public void parseContent(int sourceId, ContentListener contentListener) {
-        log.info("parseContent(): sourceId={}", sourceId);
-        Parser parser = parserFactory.getParser(sourceId);
-        parser.auth(getAuthorizationMeta(sourceId).orElse(null),
+    public void parseContent(SourceContext sourceContext, ContentListener contentListener) {
+        log.info("parseContent(): sourceId={}", sourceContext.getId());
+        sourceContext.getParser().auth(getAuthorizationMeta(sourceContext.getId()).orElse(null),
                 authorizationMeta -> {
-                    insertOrUpdateAuthorizationMeta(authorizationMeta, sourceId);
-                    long offset = getOffset(sourceId).orElse(0L);
-                    parser.parse(offset).ifPresent(content -> {
-                        log.info("Content obtained: sourceId={}, content={}", sourceId, content);
+                    insertOrUpdateAuthorizationMeta(authorizationMeta, sourceContext.getId());
+                    long offset = getOffset(sourceContext.getId()).orElse(0L);
+                    sourceContext.getParser().parse(offset).ifPresent(content -> {
+                        log.info("Content obtained: sourceId={}, content={}", sourceContext.getId(), content);
                         contentListener.onContentParsed(content);
                     });
                 });

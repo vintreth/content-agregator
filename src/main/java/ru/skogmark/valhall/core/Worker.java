@@ -2,6 +2,8 @@ package ru.skogmark.valhall.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.skogmark.valhall.core.content.ContentService;
 import ru.skogmark.valhall.core.premoderation.PremoderationQueueService;
 import ru.skogmark.valhall.core.premoderation.UnmoderatedPost;
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.requireNonNull;
 
+@Component
 class Worker {
     private static final Logger log = LoggerFactory.getLogger(Worker.class);
 
@@ -61,7 +64,7 @@ class Worker {
             return;
         }
         log.info("Parsing content for: channelContext={}, sourceContext={}", channelContext, sourceContext);
-        contentService.parseContent(sourceContext.getId(), content -> {
+        contentService.parseContent(sourceContext, content -> {
             Optional<Image> image = imageDownloadService.downloadAndSave(content.getImageUri());
             premoderationQueueService.enqueuePost(buildUnmoderatedPost(content.getText(),
                     image.flatMap(Image::getId).orElse(null)));

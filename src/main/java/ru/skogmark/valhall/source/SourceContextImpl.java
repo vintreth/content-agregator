@@ -2,6 +2,7 @@ package ru.skogmark.valhall.source;
 
 import ru.skogmark.valhall.core.SourceContext;
 import ru.skogmark.valhall.core.Timetable;
+import ru.skogmark.valhall.core.content.Parser;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -13,11 +14,17 @@ public class SourceContextImpl implements SourceContext {
     private final int parsingLimit;
     @Nonnull
     private final Timetable timetable;
+    @Nonnull
+    private final Parser parser;
 
-    private SourceContextImpl(@Nonnull Integer id, @Nonnull Integer parsingLimit, @Nonnull Timetable timetable) {
+    private SourceContextImpl(@Nonnull Integer id,
+                              @Nonnull Integer parsingLimit,
+                              @Nonnull Timetable timetable,
+                              @Nonnull Parser parser) {
         this.id = requireNonNull(id, "id");
         this.parsingLimit = requireNonNull(parsingLimit, "parsingLimit");
         this.timetable = requireNonNull(timetable, "timetable");
+        this.parser = requireNonNull(parser, "parser");
     }
 
     @Override
@@ -26,6 +33,7 @@ public class SourceContextImpl implements SourceContext {
                 "id=" + id +
                 ", parsingLimit=" + parsingLimit +
                 ", timetable=" + timetable +
+                ", parser=" + parser +
                 '}';
     }
 
@@ -42,7 +50,6 @@ public class SourceContextImpl implements SourceContext {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id);
     }
 
@@ -59,6 +66,12 @@ public class SourceContextImpl implements SourceContext {
         return timetable;
     }
 
+    @Nonnull
+    @Override
+    public Parser getParser() {
+        return parser;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -67,12 +80,13 @@ public class SourceContextImpl implements SourceContext {
         private int id;
         private int parsingLimit;
         private Timetable timetable;
+        private Parser parser;
 
         private Builder() {
         }
 
         public SourceContext build() {
-            return new SourceContextImpl(id, parsingLimit, timetable);
+            return new SourceContextImpl(id, parsingLimit, timetable, parser);
         }
 
         public Builder setId(int id) {
@@ -87,6 +101,11 @@ public class SourceContextImpl implements SourceContext {
 
         public Builder timetable(Timetable timetable) {
             this.timetable = timetable;
+            return this;
+        }
+
+        public Builder parser(Parser parser) {
+            this.parser = parser;
             return this;
         }
     }
