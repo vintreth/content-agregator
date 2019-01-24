@@ -1,6 +1,7 @@
 package ru.skogmark.valhall;
 
 import com.google.common.collect.Sets;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,10 +15,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.skogmark.common.config.ConfigurationLoader;
 import ru.skogmark.common.config.Configurations;
 import ru.skogmark.common.migration.MigrationService;
+import ru.skogmark.framework.request.OutgoingRequestService;
 import ru.skogmark.valhall.config.ApplicationConfiguration;
 import ru.skogmark.valhall.config.DataSourceConfiguration;
 
 import javax.sql.DataSource;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -77,15 +80,20 @@ public class ValhallApplication {
     }
 
     @Bean
-    ExecutorService outputRequestExecutor(ApplicationConfiguration applicationConfiguration) {
+    ExecutorService outgoingRequestExecutor(ApplicationConfiguration applicationConfiguration) {
         return Executors.newFixedThreadPool(applicationConfiguration.getOutputRequestThreadPoolSize(),
                 new ThreadFactory() {
                     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
                     @Override
                     public Thread newThread(Runnable runnable) {
-                        return new Thread(runnable, "output-request-" + threadNumber.getAndIncrement());
+                        return new Thread(runnable, "outgoing-request-" + threadNumber.getAndIncrement());
                     }
                 });
+    }
+
+    @Bean
+    OutgoingRequestService outgoingRequestService(ExecutorService outgoingRequestExecutor) {
+        return new OutgoingRequestService(HttpClientBuilder.create().build(), outgoingRequestExecutor);
     }
 }
