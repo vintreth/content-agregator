@@ -1,2 +1,2 @@
-# content-agregator
+# content-aggregator
 Core of the system
