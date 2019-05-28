@@ -2,6 +2,7 @@ package ru.skogmark.aggregator.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import ru.skogmark.aggregator.core.content.ContentService;
 import ru.skogmark.aggregator.core.premoderation.PremoderationQueueService;
@@ -11,7 +12,6 @@ import ru.skogmark.aggregator.image.ImageDownloadService;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static java.util.Objects.requireNonNull;
 
 @Component
-class Worker {
+class Worker implements InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(Worker.class);
 
     private final ScheduledExecutorService subjectWorkerExecutor;
@@ -43,8 +43,8 @@ class Worker {
         this.imageDownloadService = requireNonNull(imageDownloadService, "imageDownloadService");
     }
 
-    @PostConstruct
-    void start() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         log.info("Starting worker");
         subjectWorkerExecutor.scheduleWithFixedDelay(() -> channelContexts
                         .forEach(channelContext -> channelContext.getSourceContexts()
