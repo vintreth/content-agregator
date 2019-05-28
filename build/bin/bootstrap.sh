@@ -1,2 +1,2 @@
 #!/bin/sh
-/usr/bin/java -Dlogging.config=/opt/valhall/conf/logback.xml -Dapp.configLocation=/opt/valhall/conf -jar /opt/valhall/lib/app.jar
+/usr/bin/java -Dlogging.config=/opt/aggregator/conf/logback.xml -Dapp.configLocation=/opt/aggregator/conf -jar /opt/aggregator/lib/app.jar

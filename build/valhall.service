@@ -1,11 +1,11 @@
 [Unit]
-Description=valhall
+Description=aggregator
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/valhall/bin
-ExecStart=/bin/sh /opt/valhall/bin/bootstrap.sh
+WorkingDirectory=/opt/aggregator/bin
+ExecStart=/bin/sh /opt/aggregator/bin/bootstrap.sh
 
 User=svip
 Group=svip
