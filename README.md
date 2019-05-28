@@ -1,2 +1,2 @@
-# content-aggregator
+# skogmark-aggregator
 Core of the system
