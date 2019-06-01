@@ -1,5 +1,7 @@
 package ru.skogmark.aggregator;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -93,6 +95,14 @@ public class AggregatorApplication {
 
     @Bean
     OutgoingRequestService outgoingRequestService(ExecutorService outgoingRequestExecutor) {
+        // todo client settings
         return new OutgoingRequestService(HttpClientBuilder.create().build(), outgoingRequestExecutor);
+    }
+
+    @Bean
+    ObjectMapper applicationObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        return objectMapper;
     }
 }
