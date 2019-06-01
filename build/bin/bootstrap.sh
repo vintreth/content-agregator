@@ -1,2 +1,2 @@
 #!/bin/sh
-/usr/bin/java -Dlogging.config=/opt/aggregator/conf/logback.xml -Dapp.configLocation=/opt/aggregator/conf -jar /opt/aggregator/lib/app.jar
+/usr/bin/java -Dspring.config.location=/opt/aggregator/conf/application.properties -Dlogging.config=/opt/aggregator/conf/logback.xml -Dapp.configLocation=/opt/aggregator/conf -jar /opt/aggregator/lib/app.jar

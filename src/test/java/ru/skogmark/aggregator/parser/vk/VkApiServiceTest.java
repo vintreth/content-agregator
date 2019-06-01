@@ -1,4 +1,4 @@
-package ru.skogmark.aggregator.parser.vk.api;
+package ru.skogmark.aggregator.parser.vk;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;

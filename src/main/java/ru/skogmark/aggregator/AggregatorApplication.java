@@ -12,8 +12,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import ru.skogmark.aggregator.config.ApplicationConfiguration;
-import ru.skogmark.aggregator.config.DataSourceConfiguration;
+import ru.skogmark.aggregator.prop.AggregatorProperties;
+import ru.skogmark.aggregator.prop.DataSourceProperties;
 import ru.skogmark.common.config.ConfigurationLoader;
 import ru.skogmark.common.config.Configurations;
 import ru.skogmark.common.migration.MigrationService;
@@ -34,12 +34,12 @@ public class AggregatorApplication {
     }
 
     @Bean
-    DataSource postgresDataSource(DataSourceConfiguration dataSourceConfiguration) {
+    DataSource postgresDataSource(DataSourceProperties dataSourceProperties) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(dataSourceConfiguration.getUrl());
-        dataSource.setUsername(dataSourceConfiguration.getUsername());
-        dataSource.setPassword(dataSourceConfiguration.getPassword());
+        dataSource.setUrl(dataSourceProperties.getUrl());
+        dataSource.setUsername(dataSourceProperties.getUsername());
+        dataSource.setPassword(dataSourceProperties.getPassword());
         return dataSource;
     }
 
@@ -79,8 +79,8 @@ public class AggregatorApplication {
     }
 
     @Bean
-    ExecutorService outgoingRequestExecutor(ApplicationConfiguration applicationConfiguration) {
-        return Executors.newFixedThreadPool(applicationConfiguration.getOutputRequestThreadPoolSize(),
+    ExecutorService outgoingRequestExecutor(AggregatorProperties aggregatorProperties) {
+        return Executors.newFixedThreadPool(aggregatorProperties.getOutputRequestThreadPoolSize(),
                 new ThreadFactory() {
                     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
