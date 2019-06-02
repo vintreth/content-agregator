@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,10 +23,12 @@ public class PremoderationQueueService {
         this.premoderationQueueDao = requireNonNull(premoderationQueueDao, "premoderationQueueDao");
     }
 
-    public void enqueuePost(UnmoderatedPost post) {
-        log.info("enqueuePost(): post={}", post);
-        transactionTemplate.execute(transactionStatus -> {
-            premoderationQueueDao.insertPost(post);
+    public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
+        requireNonNull(posts, "posts");
+        log.info("enqueuePosts(): posts={}", posts);
+        transactionTemplate.execute(status -> {
+            // todo batch insert
+            posts.forEach(premoderationQueueDao::insertPost);
             return null;
         });
     }

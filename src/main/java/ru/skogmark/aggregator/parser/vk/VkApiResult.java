@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
-
-public class VkApiResult {
-    private final VkApiResponse response;
+class VkApiResult {
+    // todo add error field
+    private final Response response;
 
     @JsonCreator
-    public VkApiResult(@JsonProperty("response") @Nonnull VkApiResponse response) {
-        this.response = requireNonNull(response, "response");
+    private VkApiResult(@JsonProperty("response") @Nullable Response response) {
+        this.response = response;
     }
 
     @Override
@@ -20,5 +21,14 @@ public class VkApiResult {
         return "VkApiResult{" +
                 "response=" + response +
                 '}';
+    }
+
+    @Nonnull
+    Optional<Response> getResponse() {
+        return Optional.ofNullable(response);
+    }
+
+    boolean isError() {
+        return false;
     }
 }

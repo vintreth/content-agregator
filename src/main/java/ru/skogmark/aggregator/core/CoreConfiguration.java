@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Configuration
 public class CoreConfiguration {
     @Bean
-    ScheduledExecutorService subjectWorkerExecutor() {
-        return Executors.newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "subject-worker"));
+    ScheduledExecutorService workerExecutor() {
+        return Executors.newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "worker"));
     }
 }

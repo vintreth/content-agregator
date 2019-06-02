@@ -57,10 +57,10 @@ public class UnmoderatedPost {
 
     public Builder copy() {
         return builder()
-                .id(id)
-                .text(text)
-                .imageId(imageId)
-                .createdDt(createdDt);
+                .setId(id)
+                .setText(text)
+                .setImageId(imageId)
+                .setCreatedDt(createdDt);
     }
 
     public static Builder builder() {
@@ -76,22 +76,22 @@ public class UnmoderatedPost {
         private Builder() {
         }
 
-        public Builder id(Long id) {
+        public Builder setId(Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder text(String text) {
+        public Builder setText(String text) {
             this.text = text;
             return this;
         }
 
-        public Builder imageId(Long imageId) {
+        public Builder setImageId(Long imageId) {
             this.imageId = imageId;
             return this;
         }
 
-        public Builder createdDt(ZonedDateTime createdDt) {
+        public Builder setCreatedDt(ZonedDateTime createdDt) {
             this.createdDt = createdDt;
             return this;
         }

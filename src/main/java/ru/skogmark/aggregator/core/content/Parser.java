@@ -1,11 +1,8 @@
 package ru.skogmark.aggregator.core.content;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.List;
+import java.util.function.Consumer;
 
 public interface Parser {
-    void auth(@Nullable AuthorizationMeta authorizationMeta, @Nonnull ParserAuthorizationListener listener);
-
-    Optional<Content> parse(long offset); // todo add parsing limit
+    void parse(int sourceId, int limit, long offset, Consumer<List<Content>> onContentReceivedCallback);
 }

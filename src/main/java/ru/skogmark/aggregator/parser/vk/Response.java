@@ -9,22 +9,32 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class VkApiResponse {
+class Response {
     private final Integer count;
-    private final List<VkApiResponseItem> items;
+    private final List<Item> items;
 
     @JsonCreator
-    public VkApiResponse(@JsonProperty("count") @Nonnull Integer count,
-                         @JsonProperty("items") @Nonnull List<VkApiResponseItem> items) {
+    private Response(@JsonProperty("count") @Nonnull Integer count,
+                     @JsonProperty("items") @Nonnull List<Item> items) {
         this.count = requireNonNull(count, "count");
         this.items = Collections.unmodifiableList(requireNonNull(items, "items"));
     }
 
     @Override
     public String toString() {
-        return "VkApiResponse{" +
+        return "Response{" +
                 "count=" + count +
                 ", items=" + items +
                 '}';
+    }
+
+    @Nonnull
+    Integer getCount() {
+        return count;
+    }
+
+    @Nonnull
+    List<Item> getItems() {
+        return items;
     }
 }

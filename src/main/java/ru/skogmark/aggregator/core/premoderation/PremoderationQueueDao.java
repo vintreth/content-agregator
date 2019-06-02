@@ -32,6 +32,6 @@ class PremoderationQueueDao {
                         .addValue("imageId", post.getImageId().orElse(null)),
                 Long.class);
         log.info("Post inserted: id={}", id);
-        return post.copy().id(id).build();
+        return post.copy().setId(id).build();
     }
 }

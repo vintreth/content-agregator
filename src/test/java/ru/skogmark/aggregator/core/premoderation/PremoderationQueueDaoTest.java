@@ -16,8 +16,8 @@ public class PremoderationQueueDaoTest {
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
         PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate);
         UnmoderatedPost post = UnmoderatedPost.builder()
-                .text("test text of post with some info")
-                .imageId(12345L)
+                .setText("test text of post with some info")
+                .setImageId(12345L)
                 .build();
 
         dao.insertPost(post);
