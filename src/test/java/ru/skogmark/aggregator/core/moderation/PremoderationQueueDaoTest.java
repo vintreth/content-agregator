@@ -1,9 +1,13 @@
-package ru.skogmark.aggregator.core.premoderation;
+package ru.skogmark.aggregator.core.moderation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -14,18 +18,20 @@ public class PremoderationQueueDaoTest {
     public void shouldMapParamsCorrectlyWhenInserting() {
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
-        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate);
+        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, new ObjectMapper());
         UnmoderatedPost post = UnmoderatedPost.builder()
                 .setText("test text of post with some info")
-                .setImageId(12345L)
+                .setImages(Lists.newArrayList("http://localhost/image0", "http://localhost/image1",
+                        "http://localhost/image2"))
                 .build();
 
         dao.insertPost(post);
 
         ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
         verify(jdbcTemplate, times(1))
-                .queryForObject(any(), captor.capture(), (Class<Long>) any());
+                .queryForObject(any(), captor.capture(), (Class<List>) any());
         assertEquals("test text of post with some info", captor.getValue().getValue("text"));
-        assertEquals(12345L, captor.getValue().getValue("imageId"));
+        assertEquals("[\"http://localhost/image0\",\"http://localhost/image1\",\"http://localhost/image2\"]",
+                captor.getValue().getValue("images"));
     }
 }

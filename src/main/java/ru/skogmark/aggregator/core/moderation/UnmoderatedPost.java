@@ -1,27 +1,27 @@
-package ru.skogmark.aggregator.core.premoderation;
+package ru.skogmark.aggregator.core.moderation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
+
 public class UnmoderatedPost {
-    @Nullable
     private final Long id;
-
-    @Nullable
     private final String text;
-
-    @Nullable
-    private final Long imageId;
-
-    @Nullable
+    private final List<String> images;
     private final ZonedDateTime createdDt;
 
-    private UnmoderatedPost(Long id, String text, Long imageId, ZonedDateTime createdDt) {
+    private UnmoderatedPost(@Nullable Long id,
+                            @Nonnull String text,
+                            @Nullable List<String> images,
+                            @Nullable ZonedDateTime createdDt) {
         this.id = id;
-        this.text = text;
-        this.imageId = imageId;
+        this.text = requireNonNull(text, "text");
+        this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
         this.createdDt = createdDt;
     }
 
@@ -36,8 +36,8 @@ public class UnmoderatedPost {
     }
 
     @Nonnull
-    public Optional<Long> getImageId() {
-        return Optional.ofNullable(imageId);
+    public List<String> getImages() {
+        return images;
     }
 
     @Nullable
@@ -50,7 +50,7 @@ public class UnmoderatedPost {
         return "UnmoderatedPost{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
-                ", imageId=" + imageId +
+                ", images=" + images +
                 ", createdDt=" + createdDt +
                 '}';
     }
@@ -59,7 +59,7 @@ public class UnmoderatedPost {
         return builder()
                 .setId(id)
                 .setText(text)
-                .setImageId(imageId)
+                .setImages(images)
                 .setCreatedDt(createdDt);
     }
 
@@ -70,7 +70,7 @@ public class UnmoderatedPost {
     public static class Builder {
         private Long id;
         private String text;
-        private Long imageId;
+        private List<String> images;
         private ZonedDateTime createdDt;
 
         private Builder() {
@@ -86,8 +86,8 @@ public class UnmoderatedPost {
             return this;
         }
 
-        public Builder setImageId(Long imageId) {
-            this.imageId = imageId;
+        public Builder setImages(List<String> images) {
+            this.images = images;
             return this;
         }
 
@@ -97,7 +97,7 @@ public class UnmoderatedPost {
         }
 
         public UnmoderatedPost build() {
-            return new UnmoderatedPost(id, text, imageId, createdDt);
+            return new UnmoderatedPost(id, text, images, createdDt);
         }
     }
 }

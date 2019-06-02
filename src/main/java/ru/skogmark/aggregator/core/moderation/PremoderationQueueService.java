@@ -1,4 +1,4 @@
-package ru.skogmark.aggregator.core.premoderation;
+package ru.skogmark.aggregator.core.moderation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

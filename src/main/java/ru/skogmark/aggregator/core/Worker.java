@@ -5,9 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import ru.skogmark.aggregator.core.content.SourceDao;
-import ru.skogmark.aggregator.core.premoderation.PremoderationQueueService;
-import ru.skogmark.aggregator.core.premoderation.UnmoderatedPost;
-import ru.skogmark.aggregator.image.ImageDownloadService;
+import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
+import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,19 +26,16 @@ class Worker implements InitializingBean {
     private final List<ChannelContext> channelContexts;
     private final SourceDao sourceDao;
     private final PremoderationQueueService premoderationQueueService;
-    private final ImageDownloadService imageDownloadService;
     private final ParsingTimeStorage parsingTimeStorage = new ParsingTimeStorage();
 
     Worker(@Nonnull ScheduledExecutorService workerExecutor,
            @Nonnull List<ChannelContext> channelContexts,
            @Nonnull SourceDao sourceDao,
-           @Nonnull PremoderationQueueService premoderationQueueService,
-           @Nonnull ImageDownloadService imageDownloadService) {
+           @Nonnull PremoderationQueueService premoderationQueueService) {
         this.workerExecutor = requireNonNull(workerExecutor, "workerExecutor");
         this.channelContexts = requireNonNull(channelContexts, "channelContexts");
         this.sourceDao = requireNonNull(sourceDao, "sourceDao");
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
-        this.imageDownloadService = requireNonNull(imageDownloadService, "imageDownloadService");
     }
 
     @Override
@@ -92,8 +88,6 @@ class Worker implements InitializingBean {
                 offset,
                 contents -> {
                     log.info("Content obtained: sourceId={}, contents={}", sourceContext.getSourceId(), contents);
-                    // todo async task for downloading images
-//                    Optional<Image> image = imageDownloadService.downloadAndSave(content.getImageUri());
                     premoderationQueueService.enqueuePosts(contents.stream()
                             .map(content -> buildUnmoderatedPost(content.getText(), null))
                             .collect(Collectors.toList()));
@@ -105,7 +99,7 @@ class Worker implements InitializingBean {
         requireNonNull(text, "text");
         return UnmoderatedPost.builder()
                 .setText(text)
-                .setImageId(imageId)
+//                .setImages(imageId)
                 .build();
     }
 }

@@ -17,7 +17,7 @@ class Attachment {
     private Attachment(@JsonProperty("type") @Nonnull String type,
                        @JsonProperty("photo") @Nullable Photo photo) {
         this.type = requireNonNull(type, "type");
-        this.photo = requireNonNull(photo, "photo");
+        this.photo = photo;
     }
 
     @Override
