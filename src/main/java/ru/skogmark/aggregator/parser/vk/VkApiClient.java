@@ -5,11 +5,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.skogmark.aggregator.prop.VkParserProperties;
 import ru.skogmark.framework.request.OutgoingRequestService;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -43,7 +46,7 @@ public class VkApiClient {
                         .put("count", request.getCount())
                         .put("access_token", vkParserProperties.getAccessToken())
                         .put("v", vkParserProperties.getVersion())
-                        .put("offset", request.getOffset())
+                        .put("offset", request.getOffset().orElse(null))
                         .build()),
                 new JsonDeserializerCallbackDecorator<>(onResponseReceivedCallback, VkApiResult.class, objectMapper));
     }
@@ -51,18 +54,26 @@ public class VkApiClient {
     private static class QueryStringBuilder {
         private final Map<String, String> params = new HashMap<>();
 
-        QueryStringBuilder put(String paramName, String paramValue) {
-            params.put(paramName, paramValue);
+        QueryStringBuilder put(@Nonnull String paramName, int paramValue) {
+            put(paramName, String.valueOf(paramValue));
             return this;
         }
 
-        QueryStringBuilder put(String paramName, int paramValue) {
-            params.put(paramName, String.valueOf(paramValue));
+        QueryStringBuilder put(@Nonnull String paramName, long paramValue) {
+            put(paramName, String.valueOf(paramValue));
             return this;
         }
 
-        QueryStringBuilder put(String paramName, long paramValue) {
-            params.put(paramName, String.valueOf(paramValue));
+        QueryStringBuilder put(@Nonnull String paramName, @Nullable Object paramValue) {
+            put(paramName, paramValue == null ? null : String.valueOf(paramValue));
+            return this;
+        }
+
+        QueryStringBuilder put(@Nonnull String paramName, @Nullable String paramValue) {
+            requireNonNull(paramName, "paramName");
+            if (paramValue != null && !paramValue.isEmpty()) {
+                params.put(paramName, paramValue);
+            }
             return this;
         }
 
@@ -74,6 +85,8 @@ public class VkApiClient {
     }
 
     private static class JsonDeserializerCallbackDecorator<T> implements Consumer<HttpResponse> {
+        private static final Logger log = LoggerFactory.getLogger(JsonDeserializerCallbackDecorator.class);
+
         private final Consumer<T> callback;
         private final Class<T> responseClass;
         private final ObjectMapper objectMapper;
@@ -91,6 +104,7 @@ public class VkApiClient {
             try {
                 String content = IOUtils.toString(httpResponse.getEntity().getContent(),
                         StandardCharsets.UTF_8);
+                log.debug("Deserializing json to object: json={}", content);
                 T deserializedContent = objectMapper.readValue(content, responseClass);
                 callback.accept(deserializedContent);
             } catch (IOException e) {

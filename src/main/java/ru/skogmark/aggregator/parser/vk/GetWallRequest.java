@@ -1,17 +1,19 @@
 package ru.skogmark.aggregator.parser.vk;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
 class GetWallRequest {
     private final Owner owner;
-    private final int count;
-    private final long offset;
+    private final Integer count;
+    private final Long offset;
 
-    private GetWallRequest(@Nonnull Owner owner, int count, long offset) {
+    private GetWallRequest(@Nonnull Owner owner, @Nonnull Integer count, @Nullable Long offset) {
         this.owner = requireNonNull(owner, "owner");
-        this.count = count;
+        this.count = requireNonNull(count, "count");
         this.offset = offset;
     }
 
@@ -29,12 +31,14 @@ class GetWallRequest {
         return owner;
     }
 
-    int getCount() {
+    @Nonnull
+    Integer getCount() {
         return count;
     }
 
-    long getOffset() {
-        return offset;
+    @Nonnull
+    Optional<Long> getOffset() {
+        return Optional.ofNullable(offset);
     }
 
     static Builder builder() {

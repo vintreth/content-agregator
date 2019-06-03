@@ -18,7 +18,10 @@ public class VkApiClientTest extends ApplicationContextAwareTest {
                 .setOwner(Owner.LEPRA)
                 .setCount(3)
                 .setOffset(0L)
-                .build(), response -> log.info("result={}", response));
+                .build(), response -> {
+            response.getResponse().get().getItems()
+                    .forEach(item -> System.out.println(item.getText()));
+        });
         Thread.sleep(5000);
     }
 }
