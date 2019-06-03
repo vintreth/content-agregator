@@ -8,8 +8,6 @@ import ru.skogmark.aggregator.core.content.Content;
 import ru.skogmark.aggregator.core.content.Parser;
 
 import javax.annotation.Nonnull;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,9 +30,9 @@ public class VkApiParser implements Parser {
         log.info("Starting parsing content in vk: limit={}, offset={}", limit, offset);
         Source source = Source.getById(sourceId);
         vkApiClient.getWall(GetWallRequest.builder()
-                        .withOwner(toOwner(source))
-                        .withCount(limit)
-                        .withOffset(offset)
+                        .setOwner(toOwner(source))
+                        .setCount(limit)
+                        .setOffset(offset)
                         .build(),
                 result -> {
                     if (result.isError() || result.getResponse().isEmpty()) {
@@ -61,18 +59,12 @@ public class VkApiParser implements Parser {
                 .setExternalId(item.getId())
                 .setText(item.getText());
         if (!item.getAttachments().isEmpty()) {
-            Optional<Photo> photo = getPhoto(item.getAttachments());
-            photo.ifPresent(p -> p.getSizes().stream()
-                    .filter(size -> "w".equals(size.getType()))
-                    .map(Size::getUrl)
-                    .findFirst()
-                    .ifPresent(url -> {
-                        try {
-                            builder.setImageUri(new URI(url));
-                        } catch (URISyntaxException e) {
-                            log.error("Image url has invalid format: url=" + url, e);
-                        }
-                    }));
+            getPhoto(item.getAttachments()).ifPresent(photo -> {
+                List<String> images = photo.getSizes().stream()
+                        .map(Size::getUrl)
+                        .collect(Collectors.toList());
+                builder.setImages(images);
+            });
         }
         return builder.build();
     }

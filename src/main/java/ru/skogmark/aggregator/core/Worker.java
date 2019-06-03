@@ -4,12 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
+import ru.skogmark.aggregator.core.content.Content;
 import ru.skogmark.aggregator.core.content.SourceDao;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,16 +26,18 @@ class Worker implements InitializingBean {
     private final List<ChannelContext> channelContexts;
     private final SourceDao sourceDao;
     private final PremoderationQueueService premoderationQueueService;
-    private final ParsingTimeStorage parsingTimeStorage = new ParsingTimeStorage();
+    private final ParsingTimeStorage parsingTimeStorage;
 
     Worker(@Nonnull ScheduledExecutorService workerExecutor,
            @Nonnull List<ChannelContext> channelContexts,
            @Nonnull SourceDao sourceDao,
-           @Nonnull PremoderationQueueService premoderationQueueService) {
+           @Nonnull PremoderationQueueService premoderationQueueService,
+           @Nonnull ParsingTimeStorage parsingTimeStorage) {
         this.workerExecutor = requireNonNull(workerExecutor, "workerExecutor");
         this.channelContexts = requireNonNull(channelContexts, "channelContexts");
         this.sourceDao = requireNonNull(sourceDao, "sourceDao");
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
+        this.parsingTimeStorage = requireNonNull(parsingTimeStorage, "parsingTimeStorage");
     }
 
     @Override
@@ -47,7 +49,8 @@ class Worker implements InitializingBean {
                 0, 1, TimeUnit.SECONDS);
     }
 
-    private void parseContentAndEnqueuePosts(ChannelContext channelContext, SourceContext sourceContext) {
+    // todo tests
+    void parseContentAndEnqueuePosts(ChannelContext channelContext, SourceContext sourceContext) {
         ZonedDateTime parsingTime = ZonedDateTime.now();
         if (parsingTimeStorage.minuteExists(channelContext.getChannelId(), sourceContext.getSourceId(), parsingTime)) {
             log.debug("SourceContext has been parsed already at this minute: sourceContext={}", sourceContext);
@@ -59,7 +62,7 @@ class Worker implements InitializingBean {
         }
         log.info("Parsing content for: channelContext={}, sourceContext={}", channelContext, sourceContext);
         // todo enqueue async task for parser?
-        parseContent(sourceContext);
+        parseContent(sourceContext, channelContext.getChannelId());
         parsingTimeStorage.put(channelContext.getChannelId(), sourceContext.getSourceId(), parsingTime);
     }
 
@@ -79,7 +82,7 @@ class Worker implements InitializingBean {
                         startingTime.getHour() == time.getHour() && startingTime.getMinute() == time.getMinute());
     }
 
-    private void parseContent(SourceContext sourceContext) {
+    private void parseContent(SourceContext sourceContext, int channelId) {
         log.info("parseContent(): sourceId={}", sourceContext.getSourceId());
         long offset = sourceDao.getOffset(sourceContext.getSourceId()).orElse(0L);
         sourceContext.getParser().parse(
@@ -89,17 +92,18 @@ class Worker implements InitializingBean {
                 contents -> {
                     log.info("Content obtained: sourceId={}, contents={}", sourceContext.getSourceId(), contents);
                     premoderationQueueService.enqueuePosts(contents.stream()
-                            .map(content -> buildUnmoderatedPost(content.getText(), null))
+                            .map(content -> toUnmoderatedPost(content, channelId))
                             .collect(Collectors.toList()));
                     // todo change offset and store
                 });
     }
 
-    private static UnmoderatedPost buildUnmoderatedPost(@Nonnull String text, @Nullable Long imageId) {
-        requireNonNull(text, "text");
+    private static UnmoderatedPost toUnmoderatedPost(@Nonnull Content content, int channelId) {
+        requireNonNull(content, "content");
         return UnmoderatedPost.builder()
-                .setText(text)
-//                .setImages(imageId)
+                .setChannelId(channelId)
+                .setText(content.getText())
+                .setImages(content.getImages())
                 .build();
     }
 }

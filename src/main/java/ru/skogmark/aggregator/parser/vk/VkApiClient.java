@@ -39,11 +39,11 @@ public class VkApiClient {
         outgoingRequestService.execute(
                 HttpHost.create(vkParserProperties.getApiUrl()),
                 new HttpGet("/method/wall.get?" + new QueryStringBuilder()
-                        .with("owner_id", request.getOwner().getId())
-                        .with("count", request.getCount())
-                        .with("access_token", vkParserProperties.getAccessToken())
-                        .with("v", vkParserProperties.getVersion())
-                        .with("offset", request.getOffset())
+                        .put("owner_id", request.getOwner().getId())
+                        .put("count", request.getCount())
+                        .put("access_token", vkParserProperties.getAccessToken())
+                        .put("v", vkParserProperties.getVersion())
+                        .put("offset", request.getOffset())
                         .build()),
                 new JsonDeserializerCallbackDecorator<>(onResponseReceivedCallback, VkApiResult.class, objectMapper));
     }
@@ -51,17 +51,17 @@ public class VkApiClient {
     private static class QueryStringBuilder {
         private final Map<String, String> params = new HashMap<>();
 
-        QueryStringBuilder with(String paramName, String paramValue) {
+        QueryStringBuilder put(String paramName, String paramValue) {
             params.put(paramName, paramValue);
             return this;
         }
 
-        QueryStringBuilder with(String paramName, int paramValue) {
+        QueryStringBuilder put(String paramName, int paramValue) {
             params.put(paramName, String.valueOf(paramValue));
             return this;
         }
 
-        QueryStringBuilder with(String paramName, long paramValue) {
+        QueryStringBuilder put(String paramName, long paramValue) {
             params.put(paramName, String.valueOf(paramValue));
             return this;
         }

@@ -46,12 +46,12 @@ public class ChannelContext {
             return new ChannelContext(channelId, sourceContexts);
         }
 
-        public Builder withChannelId(Integer channelId) {
+        public Builder setChannelId(Integer channelId) {
             this.channelId = channelId;
             return this;
         }
 
-        public Builder withSources(Set<SourceContext> sourceContexts) {
+        public Builder setSources(Set<SourceContext> sourceContexts) {
             this.sourceContexts = sourceContexts;
             return this;
         }

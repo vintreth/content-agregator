@@ -1,5 +1,7 @@
 package ru.skogmark.aggregator.core;
 
+import org.springframework.stereotype.Component;
+
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
+@Component
 class ParsingTimeStorage {
     private final Map<String, ZonedDateTime> storage = new HashMap<>();
 

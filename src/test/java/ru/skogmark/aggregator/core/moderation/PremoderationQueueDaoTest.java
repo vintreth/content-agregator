@@ -20,6 +20,7 @@ public class PremoderationQueueDaoTest {
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
         PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, new ObjectMapper());
         UnmoderatedPost post = UnmoderatedPost.builder()
+                .setChannelId(453453)
                 .setText("test text of post with some info")
                 .setImages(Lists.newArrayList("http://localhost/image0", "http://localhost/image1",
                         "http://localhost/image2"))
@@ -30,6 +31,7 @@ public class PremoderationQueueDaoTest {
         ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
         verify(jdbcTemplate, times(1))
                 .queryForObject(any(), captor.capture(), (Class<List>) any());
+        assertEquals(453453, captor.getValue().getValue("channelId"));
         assertEquals("test text of post with some info", captor.getValue().getValue("text"));
         assertEquals("[\"http://localhost/image0\",\"http://localhost/image1\",\"http://localhost/image2\"]",
                 captor.getValue().getValue("images"));

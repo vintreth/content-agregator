@@ -19,12 +19,12 @@ public class ChannelConfiguration {
     @Bean
     ChannelContext memesChannel(VkApiParser vkApiParser) {
         return ChannelContext.builder()
-                .withChannelId(MEMES.getId())
-                .withSources(Collections.singleton(SourceContext.builder()
-                        .withSourceId(VK_LEPRA.getId())
-                        .withParser(vkApiParser)
-                        .withParserLimit(10)
-                        .withTimetable(Timetable.of(Sets.newHashSet(LocalTime.of(1, 0),
+                .setChannelId(MEMES.getId())
+                .setSources(Collections.singleton(SourceContext.builder()
+                        .setSourceId(VK_LEPRA.getId())
+                        .setParser(vkApiParser)
+                        .setParserLimit(10)
+                        .setTimetable(Timetable.of(Sets.newHashSet(LocalTime.of(1, 0),
                                 LocalTime.of(13, 0))))
                         .build()))
                 .build();

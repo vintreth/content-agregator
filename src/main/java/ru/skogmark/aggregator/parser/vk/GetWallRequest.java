@@ -53,17 +53,17 @@ class GetWallRequest {
             return new GetWallRequest(owner, count, offset);
         }
 
-        Builder withOwner(Owner owner) {
+        Builder setOwner(Owner owner) {
             this.owner = owner;
             return this;
         }
 
-        Builder withCount(Integer count) {
+        Builder setCount(Integer count) {
             this.count = count;
             return this;
         }
 
-        Builder withOffset(Long offset) {
+        Builder setOffset(Long offset) {
             this.offset = offset;
             return this;
         }

@@ -86,22 +86,22 @@ public class SourceContext {
             return new SourceContext(id, timetable, parser, parserLimit);
         }
 
-        public Builder withSourceId(Integer id) {
+        public Builder setSourceId(Integer id) {
             this.id = id;
             return this;
         }
 
-        public Builder withTimetable(Timetable timetable) {
+        public Builder setTimetable(Timetable timetable) {
             this.timetable = timetable;
             return this;
         }
 
-        public Builder withParser(Parser parser) {
+        public Builder setParser(Parser parser) {
             this.parser = parser;
             return this;
         }
 
-        public Builder withParserLimit(Integer parserLimit) {
+        public Builder setParserLimit(Integer parserLimit) {
             this.parserLimit = parserLimit;
             return this;
         }

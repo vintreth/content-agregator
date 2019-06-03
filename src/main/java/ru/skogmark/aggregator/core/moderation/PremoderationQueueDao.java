@@ -30,10 +30,11 @@ class PremoderationQueueDao {
     UnmoderatedPost insertPost(@Nonnull UnmoderatedPost post) {
         requireNonNull(post, "post");
         log.info("insertPost(): post={}", post);
-        long id = jdbcTemplate.queryForObject("insert into premoderation_queue (text, images) " +
-                        "values (:text, :images) " +
+        long id = jdbcTemplate.queryForObject("insert into premoderation_queue (channel_id, text, images) " +
+                        "values (:channelId, :text, :images) " +
                         "returning id",
                 new MapSqlParameterSource()
+                        .addValue("channelId", post.getChannelId())
                         .addValue("text", post.getText().orElse(null))
                         .addValue("images", getSerializedValue(post.getImages())),
                 Long.class);

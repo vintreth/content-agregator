@@ -1,19 +1,21 @@
 package ru.skogmark.aggregator.core.content;
 
 import javax.annotation.Nonnull;
-import java.net.URI;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
 public class Content {
-    private final long externalId;
+    private final Long externalId;
     private final String text;
-    private final URI imageUri;
+    private final List<String> images;
 
-    private Content(long externalId, @Nonnull String text, @Nonnull URI imageUri) {
-        this.externalId = externalId;
+    private Content(@Nonnull Long externalId, @Nonnull String text, @Nullable List<String> images) {
+        this.externalId = requireNonNull(externalId, "externalId");
         this.text = requireNonNull(text, "text");
-        this.imageUri = requireNonNull(imageUri, "imageUri");
+        this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
     }
 
     @Override
@@ -21,11 +23,12 @@ public class Content {
         return "Content{" +
                 "externalId=" + externalId +
                 ", text='" + text + '\'' +
-                ", imageUri=" + imageUri +
+                ", images=" + images +
                 '}';
     }
 
-    public long getExternalId() {
+    @Nonnull
+    public Long getExternalId() {
         return externalId;
     }
 
@@ -35,8 +38,8 @@ public class Content {
     }
 
     @Nonnull
-    public URI getImageUri() {
-        return imageUri;
+    public List<String> getImages() {
+        return images;
     }
 
     public static Builder builder() {
@@ -46,13 +49,13 @@ public class Content {
     public static class Builder {
         private Long externalId;
         private String text;
-        private URI imageUri;
+        private List<String> images;
 
         private Builder() {
         }
 
         public Content build() {
-            return new Content(externalId, text, imageUri);
+            return new Content(externalId, text, images);
         }
 
         public Builder setExternalId(Long externalId) {
@@ -65,8 +68,8 @@ public class Content {
             return this;
         }
 
-        public Builder setImageUri(URI imageUri) {
-            this.imageUri = imageUri;
+        public Builder setImages(List<String> images) {
+            this.images = images;
             return this;
         }
     }

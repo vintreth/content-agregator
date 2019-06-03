@@ -15,9 +15,9 @@ public class VkApiClientTest extends ApplicationContextAwareTest {
     @Test
     public void should_send_test_request() throws InterruptedException {
         vkApiClient.getWall(GetWallRequest.builder()
-                .withOwner(Owner.LEPRA)
-                .withCount(3)
-                .withOffset(0L)
+                .setOwner(Owner.LEPRA)
+                .setCount(3)
+                .setOffset(0L)
                 .build(), response -> log.info("result={}", response));
         Thread.sleep(5000);
     }
