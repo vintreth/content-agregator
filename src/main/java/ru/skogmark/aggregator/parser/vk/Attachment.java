@@ -14,8 +14,8 @@ class Attachment {
     private final Photo photo;
 
     @JsonCreator
-    private Attachment(@JsonProperty("type") @Nonnull String type,
-                       @JsonProperty("photo") @Nullable Photo photo) {
+    Attachment(@JsonProperty("type") @Nonnull String type,
+               @JsonProperty("photo") @Nullable Photo photo) {
         this.type = requireNonNull(type, "type");
         this.photo = photo;
     }

@@ -1,6 +1,5 @@
 package ru.skogmark.aggregator.parser.vk;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ public class VkApiClientTest extends ApplicationContextAwareTest {
     @Autowired
     private VkApiClient vkApiClient;
 
-    @Test
+//    @Test
     public void should_send_test_request() throws InterruptedException {
         vkApiClient.getWall(GetWallRequest.builder()
                 .setOwner(Owner.LEPRA)

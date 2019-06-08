@@ -16,9 +16,9 @@ class Item {
     private final List<Attachment> attachments;
 
     @JsonCreator
-    private Item(@JsonProperty("id") @Nonnull Long id,
-                 @JsonProperty("text") @Nonnull String text,
-                 @JsonProperty("attachments") @Nullable List<Attachment> attachments) {
+    Item(@JsonProperty("id") @Nonnull Long id,
+         @JsonProperty("text") @Nonnull String text,
+         @JsonProperty("attachments") @Nullable List<Attachment> attachments) {
         this.id = requireNonNull(id, "id");
         this.text = requireNonNull(text, "text");
         this.attachments = attachments == null ? Collections.emptyList() : Collections.unmodifiableList(attachments);

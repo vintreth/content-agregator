@@ -8,18 +8,21 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 class VkApiResult {
-    // todo add error field
     private final Response response;
+    private final VkApiError error;
 
     @JsonCreator
-    private VkApiResult(@JsonProperty("response") @Nullable Response response) {
+    VkApiResult(@JsonProperty("response") @Nullable Response response,
+                @JsonProperty("error") @Nullable VkApiError error) {
         this.response = response;
+        this.error = error;
     }
 
     @Override
     public String toString() {
         return "VkApiResult{" +
                 "response=" + response +
+                ", error=" + error +
                 '}';
     }
 
@@ -28,7 +31,12 @@ class VkApiResult {
         return Optional.ofNullable(response);
     }
 
+    @Nonnull
+    Optional<VkApiError> getError() {
+        return Optional.ofNullable(error);
+    }
+
     boolean isError() {
-        return false;
+        return error != null;
     }
 }

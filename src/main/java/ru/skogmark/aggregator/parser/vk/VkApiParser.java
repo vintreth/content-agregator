@@ -31,7 +31,7 @@ public class VkApiParser implements Parser {
     public void parse(@Nonnull ParsingContext parsingContext) {
         requireNonNull(parsingContext, "parsingContext");
         log.info("Parsing content in vk: limit={}, offset={}",
-                parsingContext.getLimit(), parsingContext.getOffset());
+                parsingContext.getLimit(), parsingContext.getOffset().orElse(null));
         Source source = Source.getById(parsingContext.getSourceId());
         vkApiClient.getWall(GetWallRequest.builder()
                         .setOwner(toOwner(source))

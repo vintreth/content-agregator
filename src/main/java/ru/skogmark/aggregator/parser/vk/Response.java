@@ -14,8 +14,8 @@ class Response {
     private final List<Item> items;
 
     @JsonCreator
-    private Response(@JsonProperty("count") @Nonnull Integer count,
-                     @JsonProperty("items") @Nonnull List<Item> items) {
+    Response(@JsonProperty("count") @Nonnull Integer count,
+             @JsonProperty("items") @Nonnull List<Item> items) {
         this.count = requireNonNull(count, "count");
         this.items = Collections.unmodifiableList(requireNonNull(items, "items"));
     }

@@ -12,7 +12,7 @@ class Photo {
     private final List<Size> sizes;
 
     @JsonCreator
-    private Photo(@JsonProperty("sizes") @Nullable List<Size> sizes) {
+    Photo(@JsonProperty("sizes") @Nullable List<Size> sizes) {
         this.sizes = sizes == null ? Collections.emptyList() : Collections.unmodifiableList(sizes);
     }
 

@@ -14,10 +14,10 @@ class Size {
     private final int height;
 
     @JsonCreator
-    private Size(@JsonProperty("type") @Nonnull String type,
-                 @JsonProperty("url") @Nonnull String url,
-                 @JsonProperty("width") int width,
-                 @JsonProperty("height") int height) {
+    Size(@JsonProperty("type") @Nonnull String type,
+         @JsonProperty("url") @Nonnull String url,
+         @JsonProperty("width") int width,
+         @JsonProperty("height") int height) {
         this.type = requireNonNull(type, "type");
         this.url = requireNonNull(url, "url");
         this.width = width;
