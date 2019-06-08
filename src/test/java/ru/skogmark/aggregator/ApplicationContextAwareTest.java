@@ -3,6 +3,7 @@ package ru.skogmark.aggregator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.skogmark.common.http.HttpMethod;
 import ru.skogmark.common.http.HttpRequestHeader;
@@ -11,8 +12,10 @@ import ru.skogmark.common.http.SerializerAwareHttpRequest;
 import ru.skogmark.framework.Application;
 
 import static org.junit.Assert.assertEquals;
+import static ru.skogmark.aggregator.AggregatorApplication.PROFILE_TEST;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles(PROFILE_TEST)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ApplicationContextAwareTest {
     static {

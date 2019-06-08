@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SpringBootApplication
 public class AggregatorApplication {
     public static final String PROFILE_PRODUCTION = "production";
+    public static final String PROFILE_TEST = "test";
 
     public static void main(String[] args) {
         SpringApplication.run(AggregatorApplication.class, args);

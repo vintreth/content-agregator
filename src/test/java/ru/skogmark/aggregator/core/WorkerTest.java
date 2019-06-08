@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import ru.skogmark.aggregator.core.content.*;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
+import ru.skogmark.aggregator.core.moderation.PremoderationQueueServiceImpl;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import java.time.LocalTime;
@@ -103,7 +104,7 @@ public class WorkerTest {
         when(sourceService.getOffset(1)).thenReturn(Optional.of(1000L));
         doAnswer(invocation -> null).when(sourceService).saveOffset(sourceIdCaptor.capture(), offsetCaptor.capture());
 
-        PremoderationQueueService premoderationQueueService = mock(PremoderationQueueService.class);
+        PremoderationQueueService premoderationQueueService = mock(PremoderationQueueServiceImpl.class);
         doAnswer(invocation -> null).when(premoderationQueueService).enqueuePosts(postsCaptor.capture());
 
         return new Worker(
