@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.skogmark.aggregator.channel.Source;
 import ru.skogmark.aggregator.core.content.Content;
-import ru.skogmark.aggregator.core.content.ContentItem;
+import ru.skogmark.aggregator.core.content.ContentPost;
 import ru.skogmark.aggregator.core.content.Parser;
 import ru.skogmark.aggregator.core.content.ParsingContext;
 
@@ -44,11 +44,11 @@ public class VkApiParser implements Parser {
                     } else {
                         Content content = new Content(
                                 result.getResponse().get().getItems().stream()
-                                        .map(VkApiParser::toContentItem)
+                                        .map(VkApiParser::toPost)
                                         .collect(Collectors.toList()),
                                 calculateNextOffset(
-                                        parsingContext.getLimit(),
                                         parsingContext.getOffset().orElse(null),
+                                        parsingContext.getLimit(),
                                         result.getResponse().get().getCount()));
                         parsingContext.getOnContentReceivedCallback().accept(content);
                     }
@@ -64,8 +64,8 @@ public class VkApiParser implements Parser {
         }
     }
 
-    private static ContentItem toContentItem(Item item) {
-        ContentItem.Builder builder = ContentItem.builder()
+    private static ContentPost toPost(Item item) {
+        ContentPost.Builder builder = ContentPost.builder()
                 .setExternalId(item.getId())
                 .setText(item.getText());
         if (!item.getAttachments().isEmpty()) {
@@ -87,10 +87,14 @@ public class VkApiParser implements Parser {
                 .findFirst();
     }
 
-    private static long calculateNextOffset(int limit, @Nullable Long currentOffset, int totalMessagesCount) {
+    private static long calculateNextOffset(@Nullable Long currentOffset,
+                                            int limit,
+                                            int totalMessagesCount) {
         if (currentOffset == null) {
             return totalMessagesCount - limit;
-        } else if (currentOffset == 0) {
+        } else if (currentOffset <= 0) {
+            return 0;
+        } else if (currentOffset - limit <= 0) {
             return 0;
         } else {
             return currentOffset - limit;

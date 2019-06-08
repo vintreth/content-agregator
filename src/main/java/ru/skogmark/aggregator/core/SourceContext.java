@@ -8,12 +8,10 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class SourceContext {
-    private final int sourceId;
-    @Nonnull
+    private final Integer sourceId;
     private final Timetable timetable;
-    @Nonnull
     private final Parser parser;
-    private final int parserLimit;
+    private final Integer parserLimit;
 
     private SourceContext(@Nonnull Integer sourceId,
                           @Nonnull Timetable timetable,
@@ -51,7 +49,7 @@ public class SourceContext {
         return Objects.hash(sourceId);
     }
 
-    public int getSourceId() {
+    public Integer getSourceId() {
         return sourceId;
     }
 
@@ -65,7 +63,7 @@ public class SourceContext {
         return parser;
     }
 
-    public int getParserLimit() {
+    public Integer getParserLimit() {
         return parserLimit;
     }
 

@@ -7,12 +7,12 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class ContentItem {
+public class ContentPost {
     private final Long externalId;
     private final String text;
     private final List<String> images;
 
-    private ContentItem(@Nonnull Long externalId, @Nonnull String text, @Nullable List<String> images) {
+    private ContentPost(@Nonnull Long externalId, @Nonnull String text, @Nullable List<String> images) {
         this.externalId = requireNonNull(externalId, "externalId");
         this.text = requireNonNull(text, "text");
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
@@ -20,7 +20,7 @@ public class ContentItem {
 
     @Override
     public String toString() {
-        return "ContentItem{" +
+        return "ContentPost{" +
                 "externalId=" + externalId +
                 ", text='" + text + '\'' +
                 ", images=" + images +
@@ -54,8 +54,8 @@ public class ContentItem {
         private Builder() {
         }
 
-        public ContentItem build() {
-            return new ContentItem(externalId, text, images);
+        public ContentPost build() {
+            return new ContentPost(externalId, text, images);
         }
 
         public Builder setExternalId(Long externalId) {

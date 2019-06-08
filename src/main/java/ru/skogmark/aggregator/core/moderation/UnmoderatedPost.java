@@ -39,8 +39,8 @@ public class UnmoderatedPost {
     }
 
     @Nonnull
-    public Optional<String> getText() {
-        return Optional.ofNullable(text);
+    public String getText() {
+        return text;
     }
 
     @Nonnull
@@ -48,7 +48,7 @@ public class UnmoderatedPost {
         return images;
     }
 
-    @Nullable
+    @Nonnull
     public Optional<ZonedDateTime> getCreatedDt() {
         return Optional.ofNullable(createdDt);
     }

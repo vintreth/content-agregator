@@ -1,7 +1,7 @@
 package ru.skogmark.aggregator.parser.vk;
 
 import org.junit.Test;
-import ru.skogmark.aggregator.core.content.ContentItem;
+import ru.skogmark.aggregator.core.content.ContentPost;
 import ru.skogmark.aggregator.core.content.ParsingContext;
 
 import java.util.List;
@@ -24,10 +24,10 @@ public class VkApiParserTest {
                 .setOffset(41210L)
                 .setOnContentReceivedCallback(content -> {
                     assertNotNull(content);
-                    assertEquals(content.getItems().size(), 2);
-                    assertItem(content.getItems().get(0), result.getResponse().get().getItems().get(0));
-                    assertItem(content.getItems().get(1), result.getResponse().get().getItems().get(1));
-                    assertEquals(content.getNextOffset().longValue(), 41200L);
+                    assertEquals(2, content.getPosts().size());
+                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
+                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
+                    assertEquals(41200L, content.getNextOffset().longValue());
                 })
                 .build());
     }
@@ -42,9 +42,9 @@ public class VkApiParserTest {
                 .setOffset(null)
                 .setOnContentReceivedCallback(content -> {
                     assertNotNull(content);
-                    assertEquals(content.getItems().size(), 2);
-                    assertItem(content.getItems().get(0), result.getResponse().get().getItems().get(0));
-                    assertItem(content.getItems().get(1), result.getResponse().get().getItems().get(1));
+                    assertEquals(2, content.getPosts().size());
+                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
+                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
                     assertEquals(content.getNextOffset().longValue(), 45490L);
                 })
                 .build());
@@ -60,22 +60,43 @@ public class VkApiParserTest {
                 .setOffset(0L)
                 .setOnContentReceivedCallback(content -> {
                     assertNotNull(content);
-                    assertEquals(content.getItems().size(), 2);
-                    assertItem(content.getItems().get(0), result.getResponse().get().getItems().get(0));
-                    assertItem(content.getItems().get(1), result.getResponse().get().getItems().get(1));
+                    assertEquals(2, content.getPosts().size());
+                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
+                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
                     assertEquals(content.getNextOffset().longValue(), 0L);
                 })
                 .build());
     }
 
-    private static void assertItem(ContentItem actualItem, Item expectedItem) {
-        assertEquals(actualItem.getExternalId(), expectedItem.getId());
-        assertEquals(actualItem.getText(), expectedItem.getText());
-        assertEquals(actualItem.getImages().size(), 2);
-        assertEquals(actualItem.getImages().get(0),
-                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(0).getUrl());
-        assertEquals(actualItem.getImages().get(1),
-                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(1).getUrl());
+    @Test
+    public void should_parse_content_when_offset_is_near_0() {
+        VkApiResult result = createResult();
+        VkApiParser parser = createParser(result);
+        parser.parse(ParsingContext.builder()
+                .setSourceId(1)
+                .setLimit(10)
+                .setOffset(3L)
+                .setOnContentReceivedCallback(content -> {
+                    assertNotNull(content);
+                    assertEquals(2, content.getPosts().size());
+                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
+                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
+                    assertEquals(content.getNextOffset().longValue(), 0L);
+                })
+                .build());
+    }
+
+    private static void assertItem(Item expectedItem, ContentPost actualItem) {
+        assertEquals(expectedItem.getId(), actualItem.getExternalId());
+        assertEquals(expectedItem.getText(), actualItem.getText());
+        assertEquals(expectedItem.getAttachments().get(0).getPhoto().get().getSizes().size(),
+                actualItem.getImages().size());
+        assertEquals(
+                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(0).getUrl(),
+                actualItem.getImages().get(0));
+        assertEquals(
+                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(1).getUrl(),
+                actualItem.getImages().get(1));
     }
 
     private VkApiResult createResult() {
