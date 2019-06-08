@@ -20,12 +20,12 @@ public class AuthorizationMeta {
         return new AuthorizationMeta(sourceId, authorizationToken);
     }
 
-    int getSourceId() {
+    public int getSourceId() {
         return sourceId;
     }
 
     @Nonnull
-    String getAuthorizationToken() {
+    public String getAuthorizationToken() {
         return authorizationToken;
     }
 

@@ -12,16 +12,16 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 
 @Repository
-public class SourceDao {
+class SourceDao {
     private static final Logger log = LoggerFactory.getLogger(SourceDao.class);
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public SourceDao(@Nonnull NamedParameterJdbcTemplate jdbcTemplate) {
+    SourceDao(@Nonnull NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = requireNonNull(jdbcTemplate, "jdbcTemplate");
     }
 
-    public void insertAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
+    void insertAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
         requireNonNull(authorizationMeta, "authorizationMeta");
         log.info("insertAuthorizationMeta(): authorizationMeta={}", authorizationMeta);
         jdbcTemplate.update("insert into authorization_meta (source_id, authorization_token) values " +
@@ -32,7 +32,7 @@ public class SourceDao {
         log.info("AuthorizationMeta inserted: authorizationMeta={}", authorizationMeta);
     }
 
-    public Optional<AuthorizationMeta> getAuthorizationMeta(int sourceId) {
+    Optional<AuthorizationMeta> getAuthorizationMeta(int sourceId) {
         log.info("getAuthorizationMeta(): sourceId={}", sourceId);
         AuthorizationMeta authorizationMeta = jdbcTemplate.queryForObject(
                 "select source_id, authorization_token from authorization_meta where source_id = :sourceId",
@@ -46,7 +46,7 @@ public class SourceDao {
         return Optional.ofNullable(authorizationMeta);
     }
 
-    public void updateAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
+    void updateAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
         log.info("updateAuthorizationMeta(): authorizationMeta={}", authorizationMeta);
         int affectedRows = jdbcTemplate.update(
                 "update authorization_meta set authorization_token = :authorizationToken " +
@@ -57,7 +57,7 @@ public class SourceDao {
         log.info("AuthorizationMeta updated: affectedRows={}, authorizationMeta={}", affectedRows, authorizationMeta);
     }
 
-    public Optional<Long> getOffset(int sourceId) {
+    Optional<Long> getOffset(int sourceId) {
         log.info("getOffset(): sourceId={}", sourceId);
         Long offset = jdbcTemplate.queryForObject(
                 "select offset_value from source_offset where source_id = :sourceId",
@@ -66,5 +66,14 @@ public class SourceDao {
                 Long.class);
         log.info("Offset obtained: sourceId={}, offset={}", sourceId, offset);
         return Optional.ofNullable(offset);
+    }
+
+    boolean saveOffset(int sourceId, long offsetValue) {
+        log.info("saveOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
+        return jdbcTemplate.update(
+                "update source_offset set offset_value = :offsetValue where sourceId = :sourceId",
+                new MapSqlParameterSource()
+                        .addValue("sourceId", sourceId)
+                        .addValue("offsetValue", offsetValue)) > 0;
     }
 }

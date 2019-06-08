@@ -23,22 +23,22 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class VkApiClient {
+class VkApiClient {
     private final OutgoingRequestService outgoingRequestService;
     private final VkParserProperties vkParserProperties;
     private final ObjectMapper objectMapper;
 
-    public VkApiClient(@Nonnull OutgoingRequestService outgoingRequestService,
-                       @Nonnull VkParserProperties vkParserProperties,
-                       @Nonnull ObjectMapper objectMapper) {
+    VkApiClient(@Nonnull OutgoingRequestService outgoingRequestService,
+                @Nonnull VkParserProperties vkParserProperties,
+                @Nonnull ObjectMapper objectMapper) {
         this.outgoingRequestService = requireNonNull(outgoingRequestService, "outgoingRequestService");
         this.vkParserProperties = requireNonNull(vkParserProperties, "vkParserProperties");
         this.objectMapper = requireNonNull(objectMapper, "objectMapper");
     }
 
-    public void getWall(@Nonnull GetWallRequest request, @Nonnull Consumer<VkApiResult> onResponseReceivedCallback) {
+    void getWall(@Nonnull GetWallRequest request, @Nonnull Consumer<VkApiResult> onResultReceivedCallback) {
         requireNonNull(request, "request");
-        requireNonNull(onResponseReceivedCallback, "onResponseReceivedCallback");
+        requireNonNull(onResultReceivedCallback, "onResultReceivedCallback");
         outgoingRequestService.execute(
                 HttpHost.create(vkParserProperties.getApiUrl()),
                 new HttpGet("/method/wall.get?" + new QueryStringBuilder()
@@ -48,7 +48,7 @@ public class VkApiClient {
                         .put("v", vkParserProperties.getVersion())
                         .put("offset", request.getOffset().orElse(null))
                         .build()),
-                new JsonDeserializerCallbackDecorator<>(onResponseReceivedCallback, VkApiResult.class, objectMapper));
+                new JsonDeserializerCallbackDecorator<>(onResultReceivedCallback, VkApiResult.class, objectMapper));
     }
 
     private static class QueryStringBuilder {

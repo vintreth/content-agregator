@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.skogmark.aggregator.channel.Source;
 import ru.skogmark.aggregator.core.content.Content;
+import ru.skogmark.aggregator.core.content.ContentItem;
 import ru.skogmark.aggregator.core.content.Parser;
+import ru.skogmark.aggregator.core.content.ParsingContext;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -26,21 +28,29 @@ public class VkApiParser implements Parser {
     }
 
     @Override
-    public void parse(int sourceId, int limit, long offset, Consumer<List<Content>> onContentReceivedCallback) {
-        log.info("Starting parsing content in vk: limit={}, offset={}", limit, offset);
-        Source source = Source.getById(sourceId);
+    public void parse(@Nonnull ParsingContext parsingContext) {
+        requireNonNull(parsingContext, "parsingContext");
+        log.info("Parsing content in vk: limit={}, offset={}",
+                parsingContext.getLimit(), parsingContext.getOffset());
+        Source source = Source.getById(parsingContext.getSourceId());
         vkApiClient.getWall(GetWallRequest.builder()
                         .setOwner(toOwner(source))
-                        .setCount(limit)
-                        .setOffset(offset)
+                        .setCount(parsingContext.getLimit())
+                        .setOffset(parsingContext.getOffset().orElse(null))
                         .build(),
                 result -> {
                     if (result.isError() || result.getResponse().isEmpty()) {
                         log.error("Vk api returned error result: result={}", result);
                     } else {
-                        onContentReceivedCallback.accept(result.getResponse().get().getItems().stream()
-                                .map(VkApiParser::toContent)
-                                .collect(Collectors.toList()));
+                        Content content = new Content(
+                                result.getResponse().get().getItems().stream()
+                                        .map(VkApiParser::toContentItem)
+                                        .collect(Collectors.toList()),
+                                calculateNextOffset(
+                                        parsingContext.getLimit(),
+                                        parsingContext.getOffset().orElse(null),
+                                        result.getResponse().get().getCount()));
+                        parsingContext.getOnContentReceivedCallback().accept(content);
                     }
                 });
     }
@@ -54,8 +64,8 @@ public class VkApiParser implements Parser {
         }
     }
 
-    private static Content toContent(Item item) {
-        Content.Builder builder = Content.builder()
+    private static ContentItem toContentItem(Item item) {
+        ContentItem.Builder builder = ContentItem.builder()
                 .setExternalId(item.getId())
                 .setText(item.getText());
         if (!item.getAttachments().isEmpty()) {
@@ -75,5 +85,15 @@ public class VkApiParser implements Parser {
                 .filter(attachment -> attachment.getPhoto().isPresent())
                 .map(attachment -> attachment.getPhoto().get())
                 .findFirst();
+    }
+
+    private static long calculateNextOffset(int limit, @Nullable Long currentOffset, int totalMessagesCount) {
+        if (currentOffset == null) {
+            return totalMessagesCount - limit;
+        } else if (currentOffset == 0) {
+            return 0;
+        } else {
+            return currentOffset - limit;
+        }
     }
 }

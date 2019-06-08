@@ -14,19 +14,19 @@ import static java.util.Objects.requireNonNull;
 class ParsingTimeStorage {
     private final Map<String, ZonedDateTime> storage = new HashMap<>();
 
-    void put(int subjectId, int sourceId, ZonedDateTime parsingTime) {
-        storage.put(buildKey(subjectId, sourceId), parsingTime);
+    void put(int channelId, int sourceId, ZonedDateTime parsingTime) {
+        storage.put(buildKey(channelId, sourceId), parsingTime);
     }
 
-    boolean minuteExists(int subjectId, int sourceId, @Nonnull ZonedDateTime parsingTime) {
+    boolean minuteExists(int channelId, int sourceId, @Nonnull ZonedDateTime parsingTime) {
         requireNonNull(parsingTime, "parsingTime");
-        ZonedDateTime storedTime = storage.get(buildKey(subjectId, sourceId));
+        ZonedDateTime storedTime = storage.get(buildKey(channelId, sourceId));
         return nonNull(storedTime)
                 && storedTime.getHour() == parsingTime.getHour()
                 && storedTime.getMinute() == parsingTime.getMinute();
     }
 
-    private static String buildKey(int subjectId, int sourceId) {
-        return subjectId + "_" + sourceId;
+    private static String buildKey(int channelId, int sourceId) {
+        return channelId + "_" + sourceId;
     }
 }

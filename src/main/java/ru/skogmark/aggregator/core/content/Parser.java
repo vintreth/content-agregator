@@ -1,8 +1,7 @@
 package ru.skogmark.aggregator.core.content;
 
-import java.util.List;
-import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 
 public interface Parser {
-    void parse(int sourceId, int limit, long offset, Consumer<List<Content>> onContentReceivedCallback);
+    void parse(@Nonnull ParsingContext parsingContext);
 }

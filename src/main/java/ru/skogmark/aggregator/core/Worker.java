@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-import ru.skogmark.aggregator.core.content.Content;
-import ru.skogmark.aggregator.core.content.SourceDao;
+import ru.skogmark.aggregator.core.content.ContentItem;
+import ru.skogmark.aggregator.core.content.ParsingContext;
+import ru.skogmark.aggregator.core.content.SourceService;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
@@ -24,18 +25,18 @@ class Worker implements InitializingBean {
 
     private final ScheduledExecutorService workerExecutor;
     private final List<ChannelContext> channelContexts;
-    private final SourceDao sourceDao;
+    private final SourceService sourceService;
     private final PremoderationQueueService premoderationQueueService;
     private final ParsingTimeStorage parsingTimeStorage;
 
     Worker(@Nonnull ScheduledExecutorService workerExecutor,
            @Nonnull List<ChannelContext> channelContexts,
-           @Nonnull SourceDao sourceDao,
+           @Nonnull SourceService sourceService,
            @Nonnull PremoderationQueueService premoderationQueueService,
            @Nonnull ParsingTimeStorage parsingTimeStorage) {
         this.workerExecutor = requireNonNull(workerExecutor, "workerExecutor");
         this.channelContexts = requireNonNull(channelContexts, "channelContexts");
-        this.sourceDao = requireNonNull(sourceDao, "sourceDao");
+        this.sourceService = requireNonNull(sourceService, "sourceService");
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
         this.parsingTimeStorage = requireNonNull(parsingTimeStorage, "parsingTimeStorage");
     }
@@ -84,26 +85,29 @@ class Worker implements InitializingBean {
 
     private void parseContent(SourceContext sourceContext, int channelId) {
         log.info("parseContent(): sourceId={}", sourceContext.getSourceId());
-        long offset = sourceDao.getOffset(sourceContext.getSourceId()).orElse(0L);
-        sourceContext.getParser().parse(
-                sourceContext.getSourceId(),
-                sourceContext.getParserLimit(),
-                offset,
-                contents -> {
-                    log.info("Content obtained: sourceId={}, contents={}", sourceContext.getSourceId(), contents);
-                    premoderationQueueService.enqueuePosts(contents.stream()
-                            .map(content -> toUnmoderatedPost(content, channelId))
+        Long offset = sourceService.getOffset(sourceContext.getSourceId()).orElse(null);
+        sourceContext.getParser().parse(ParsingContext.builder()
+                .setSourceId(sourceContext.getSourceId())
+                .setLimit(sourceContext.getParserLimit())
+                .setOffset(offset)
+                .setOnContentReceivedCallback(content -> {
+                    log.info("Content obtained: sourceId={}, content={}", sourceContext.getSourceId(), content);
+                    premoderationQueueService.enqueuePosts(content.getItems().stream()
+                            .map(contentItem -> toUnmoderatedPost(contentItem, channelId))
                             .collect(Collectors.toList()));
-                    // todo change offset and store
-                });
+                    if (!content.getNextOffset().equals(offset)) {
+                        sourceService.saveOffset(sourceContext.getSourceId(), content.getNextOffset());
+                    }
+                })
+                .build());
     }
 
-    private static UnmoderatedPost toUnmoderatedPost(@Nonnull Content content, int channelId) {
-        requireNonNull(content, "content");
+    private static UnmoderatedPost toUnmoderatedPost(@Nonnull ContentItem contentItem, int channelId) {
+        requireNonNull(contentItem, "contentItem");
         return UnmoderatedPost.builder()
                 .setChannelId(channelId)
-                .setText(content.getText())
-                .setImages(content.getImages())
+                .setText(contentItem.getText())
+                .setImages(contentItem.getImages())
                 .build();
     }
 }
