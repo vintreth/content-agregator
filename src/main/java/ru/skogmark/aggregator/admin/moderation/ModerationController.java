@@ -33,7 +33,7 @@ public class ModerationController {
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
     }
 
-    @GetMapping("/posts/page/{page}")
+    @GetMapping("/posts/page/{page}/")
     public String posts(Model model, @PathVariable("page") int page) {
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
