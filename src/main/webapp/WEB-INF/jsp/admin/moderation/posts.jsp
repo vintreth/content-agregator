@@ -1,4 +1,3 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -15,13 +14,13 @@
                 <th>Images</th>
                 <th>Creation time</th>
             </tr>
-            <c:forEach item="posts" var="post">
+            <c:forEach items="${posts}" var="post">
                 <tr>
                     <td>${post.id}</td>
                     <td>${post.channelId}</td>
                     <td>${post.text}</td>
                     <td>img</td>
-                    <td>${post.creationDt}</td>
+                    <td>${post.createdDt}</td>
                 </tr>
             </c:forEach>
         </table>

@@ -3,6 +3,7 @@ package ru.skogmark.aggregator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
@@ -95,9 +96,14 @@ public class AggregatorApplication {
     }
 
     @Bean
-    OutgoingRequestService outgoingRequestService(ExecutorService outgoingRequestExecutor) {
+    HttpClient httpClient() {
         // todo client settings
-        return new OutgoingRequestService(HttpClientBuilder.create().build(), outgoingRequestExecutor);
+        return HttpClientBuilder.create().build();
+    }
+
+    @Bean
+    OutgoingRequestService outgoingRequestService(ExecutorService outgoingRequestExecutor, HttpClient httpClient) {
+        return new OutgoingRequestService(httpClient, outgoingRequestExecutor);
     }
 
     @Bean
