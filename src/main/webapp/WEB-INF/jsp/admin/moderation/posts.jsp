@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -6,7 +7,7 @@
       <title>Posts</title>
    </head>
    <body>
-        <table>
+        <table id="posts_table">
             <tr>
                 <th>Id</th>
                 <th>Channel</th>
@@ -17,9 +18,13 @@
             <c:forEach items="${posts}" var="post">
                 <tr>
                     <td>${post.id}</td>
-                    <td>${post.channelId}</td>
+                    <td>${post.channel}</td>
                     <td>${post.text}</td>
-                    <td>img</td>
+                    <td>
+                        <c:forEach items="${post.images}" var="image">
+                            <img src="${image}" alt="${image}"/>
+                        </c:forEach>
+                    </td>
                     <td>${post.createdDt}</td>
                 </tr>
             </c:forEach>

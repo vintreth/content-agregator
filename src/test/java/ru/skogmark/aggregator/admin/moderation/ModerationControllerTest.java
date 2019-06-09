@@ -5,12 +5,16 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.skogmark.aggregator.ApplicationContextAwareTest;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueServiceStub;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -52,6 +56,10 @@ public class ModerationControllerTest extends ApplicationContextAwareTest {
                 new HttpGet("/admin/moderation/posts/page/1"));
         String content = IOUtils.toString(response.getEntity().getContent(),
                 StandardCharsets.UTF_8);
-        System.out.println(content);
+        IOUtils.write(content, new FileOutputStream("target/test.html"), StandardCharsets.UTF_8);
+
+        Document doc = Jsoup.parse(content);
+        Element element = doc.getElementById("posts_table");
+        System.out.println(element.getElementsByTag("tr").get(0).getElementsByTag("th").get(0).text());
     }
 }
