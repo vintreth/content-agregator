@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 @Controller
 @RequestMapping("/admin/moderation")
 public class ModerationController {
-    private static final String CATEGORY_MODERATION = "/admin/moderation";
+    static final DateTimeFormatter viewTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd MMM");
+
+    private static final String CATEGORY_MODERATION = "admin/moderation";
     private static final String VIEW_MODERATION_POSTS = CATEGORY_MODERATION + "/posts";
 
     private static final int DEFAULT_ON_PAGE_COUNT = 20;
-
-    private static final DateTimeFormatter viewTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss dd MMM");
 
     private final PremoderationQueueService premoderationQueueService;
 

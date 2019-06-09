@@ -1,5 +1,6 @@
 package ru.skogmark.aggregator.core.moderation;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import static ru.skogmark.aggregator.AggregatorApplication.PROFILE_TEST;
 
 @Service
+@Primary
 @Profile(PROFILE_TEST)
 public class PremoderationQueueServiceStub implements PremoderationQueueService {
     private List<UnmoderatedPost> posts;
@@ -24,7 +26,7 @@ public class PremoderationQueueServiceStub implements PremoderationQueueService 
 
     @Override
     public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
-
+        // doing nothing
     }
 
     @Override
