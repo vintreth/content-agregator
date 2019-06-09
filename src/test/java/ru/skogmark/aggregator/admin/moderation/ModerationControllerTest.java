@@ -48,7 +48,7 @@ public class ModerationControllerTest extends JspEndpointTest {
                         .build());
         premoderationQueueServiceStub.setPosts(posts);
 
-        Document doc = callJspEndpoint("/admin/moderation/posts/page/1");
+        Document doc = callJspEndpoint("/admin/moderation/posts/page/1/");
 
         Element postsTable = doc.getElementById("posts-table");
         assertNotNull(postsTable);
@@ -58,7 +58,7 @@ public class ModerationControllerTest extends JspEndpointTest {
 
         Elements header = rows.get(0).getElementsByTag("th");
         assertEquals(5, header.size());
-        assertEquals("Id", header.get(0).text());
+        assertEquals("#", header.get(0).text());
         assertEquals("Channel", header.get(1).text());
         assertEquals("Text", header.get(2).text());
         assertEquals("Images", header.get(3).text());
@@ -74,7 +74,7 @@ public class ModerationControllerTest extends JspEndpointTest {
         assertEquals(5, cells.size());
         assertEquals(expectedData.getId().map(String::valueOf).orElse(null), cells.get(0).text());
         assertEquals(Channel.MEMES.getName(), cells.get(1).text());
-        assertEquals(expectedData.getText(), cells.get(2).text());
+        assertEquals(expectedData.getText().orElse(null), cells.get(2).text());
 
         Elements imgs = cells.get(3).getElementsByTag("img");
         assertEquals(expectedData.getImages().size(), imgs.size());

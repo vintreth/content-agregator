@@ -98,7 +98,7 @@ class Worker implements InitializingBean {
         requireNonNull(contentPost, "contentPost");
         return UnmoderatedPost.builder()
                 .setChannelId(channelId)
-                .setText(contentPost.getText())
+                .setText(contentPost.getText().orElse(null))
                 .setImages(contentPost.getImages())
                 .build();
     }

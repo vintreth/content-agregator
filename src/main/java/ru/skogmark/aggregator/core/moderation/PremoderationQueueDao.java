@@ -38,7 +38,7 @@ class PremoderationQueueDao {
                         "returning id",
                 new MapSqlParameterSource()
                         .addValue("channelId", post.getChannelId())
-                        .addValue("text", post.getText())
+                        .addValue("text", post.getText().orElse(null))
                         .addValue("images", getSerializedValue(post.getImages())),
                 Long.class);
         log.info("Post inserted: id={}", id);

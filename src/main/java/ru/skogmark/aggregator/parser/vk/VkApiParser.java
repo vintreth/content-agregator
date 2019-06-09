@@ -67,7 +67,7 @@ public class VkApiParser implements Parser {
     private static ContentPost toPost(Item item) {
         ContentPost.Builder builder = ContentPost.builder()
                 .setExternalId(item.getId())
-                .setText(item.getText());
+                .setText(item.getText().orElse(null));
         if (!item.getAttachments().isEmpty()) {
             getPhoto(item.getAttachments()).ifPresent(photo -> {
                 List<String> images = photo.getSizes().stream()

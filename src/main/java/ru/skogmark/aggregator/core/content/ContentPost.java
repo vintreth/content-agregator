@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,9 +13,9 @@ public class ContentPost {
     private final String text;
     private final List<String> images;
 
-    private ContentPost(@Nonnull Long externalId, @Nonnull String text, @Nullable List<String> images) {
+    private ContentPost(@Nonnull Long externalId, @Nullable String text, @Nullable List<String> images) {
         this.externalId = requireNonNull(externalId, "externalId");
-        this.text = requireNonNull(text, "text");
+        this.text = text;
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
     }
 
@@ -33,8 +34,8 @@ public class ContentPost {
     }
 
     @Nonnull
-    public String getText() {
-        return text;
+    public Optional<String> getText() {
+        return Optional.ofNullable(text);
     }
 
     @Nonnull

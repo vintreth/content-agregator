@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 import static ru.skogmark.aggregator.AggregatorApplication.PROFILE_TEST;
 
@@ -27,6 +28,11 @@ public class PremoderationQueueServiceStub implements PremoderationQueueService 
     @Override
     public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
         // doing nothing
+    }
+
+    @Override
+    public Optional<UnmoderatedPost> getPost(long id) {
+        return Optional.empty();
     }
 
     @Override

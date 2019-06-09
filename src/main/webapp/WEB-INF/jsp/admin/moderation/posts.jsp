@@ -13,7 +13,7 @@
                     <div class="table-responsive">
                         <table id="posts-table" class="table table-hover">
                             <tr>
-                                <th>Id</th>
+                                <th>#</th>
                                 <th>Channel</th>
                                 <th>Text</th>
                                 <th>Images</th>
@@ -21,9 +21,9 @@
                             </tr>
                             <c:forEach items="${posts}" var="post">
                                 <tr>
-                                    <td>${post.id}</td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.id}</a></td>
                                     <td>${post.channel}</td>
-                                    <td>${post.text}</td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.text}</a></td>
                                     <td>
                                         <c:forEach items="${post.images}" var="image">
                                             <img src="${image}" alt="${image}"/>

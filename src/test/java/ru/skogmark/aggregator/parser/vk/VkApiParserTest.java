@@ -88,7 +88,7 @@ public class VkApiParserTest {
 
     private static void assertItem(Item expectedItem, ContentPost actualItem) {
         assertEquals(expectedItem.getId(), actualItem.getExternalId());
-        assertEquals(expectedItem.getText(), actualItem.getText());
+        assertEquals(expectedItem.getText().orElse(null), actualItem.getText().orElse(null));
         assertEquals(expectedItem.getAttachments().get(0).getPhoto().get().getSizes().size(),
                 actualItem.getImages().size());
         assertEquals(

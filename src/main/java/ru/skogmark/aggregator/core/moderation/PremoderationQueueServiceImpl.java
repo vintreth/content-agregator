@@ -8,6 +8,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static ru.skogmark.aggregator.AggregatorApplication.PROFILE_PRODUCTION;
@@ -40,6 +41,11 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
     @Override
     public List<UnmoderatedPost> getPosts(int limit, long offset) {
         return premoderationQueueDao.getPosts(limit, offset);
+    }
+
+    @Override
+    public Optional<UnmoderatedPost> getPost(long id) {
+        return Optional.empty();
     }
 
     @Override

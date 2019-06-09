@@ -9,19 +9,19 @@ import static java.util.Objects.requireNonNull;
 
 public class Post {
     private final Long id;
-    private final String channel;
+    private final String channel; // todo add channel id
     private final String text;
     private final List<String> images;
     private final String createdDt;
 
-    private Post(@Nullable Long id,
+    private Post(@Nonnull Long id,
                  @Nonnull String channel,
-                 @Nonnull String text,
+                 @Nullable String text,
                  @Nullable List<String> images,
                  @Nullable String createdDt) {
-        this.id = id;
+        this.id = requireNonNull(id, "id");
         this.channel = requireNonNull(channel, "channel");
-        this.text = requireNonNull(text, "text");
+        this.text = text;
         this.images = images == null ? Collections.emptyList() : List.copyOf(images);
         this.createdDt = createdDt;
     }

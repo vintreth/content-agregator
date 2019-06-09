@@ -18,12 +18,12 @@ public class UnmoderatedPost {
 
     private UnmoderatedPost(@Nullable Long id,
                             @Nonnull Integer channelId,
-                            @Nonnull String text,
+                            @Nullable String text,
                             @Nullable List<String> images,
                             @Nullable ZonedDateTime createdDt) {
         this.id = id;
         this.channelId = requireNonNull(channelId, "channelId");
-        this.text = requireNonNull(text, "text");
+        this.text = text;
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
         this.createdDt = createdDt;
     }
@@ -39,8 +39,8 @@ public class UnmoderatedPost {
     }
 
     @Nonnull
-    public String getText() {
-        return text;
+    public Optional<String> getText() {
+        return Optional.ofNullable(text);
     }
 
     @Nonnull

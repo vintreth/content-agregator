@@ -2,6 +2,6 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/templates" %>
 <t:main title="Admin Panel">
     <jsp:attribute name="content">
-
+        error
     </jsp:attribute>
 </t:main>

@@ -82,7 +82,7 @@ public class WorkerTest {
     private static void assertPost(ContentPost expectedPost, UnmoderatedPost actualPost) {
         assertFalse(actualPost.getId().isPresent());
         assertEquals(1, actualPost.getChannelId().intValue());
-        assertEquals(expectedPost.getText(), actualPost.getText());
+        assertEquals(expectedPost.getText().orElse(null), actualPost.getText().orElse(null));
         assertEquals(expectedPost.getImages().size(), actualPost.getImages().size());
         assertTrue(expectedPost.getImages().containsAll(actualPost.getImages()));
         assertFalse(actualPost.getCreatedDt().isPresent());

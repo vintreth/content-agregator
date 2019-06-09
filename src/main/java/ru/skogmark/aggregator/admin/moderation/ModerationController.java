@@ -1,10 +1,13 @@
 package ru.skogmark.aggregator.admin.moderation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.skogmark.aggregator.admin.AdminController;
 import ru.skogmark.aggregator.admin.Paginator;
 import ru.skogmark.aggregator.channel.Channel;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
@@ -13,6 +16,7 @@ import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 import javax.annotation.Nonnull;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -24,17 +28,24 @@ public class ModerationController {
 
     private static final String CATEGORY_MODERATION = "admin/moderation";
     private static final String VIEW_MODERATION_POSTS = CATEGORY_MODERATION + "/posts";
+    private static final String VIEW_MODERATION_POST = CATEGORY_MODERATION + "/post";
 
     private static final int DEFAULT_ON_PAGE_COUNT = 20;
 
-    private final PremoderationQueueService premoderationQueueService;
+    private static final Logger log = LoggerFactory.getLogger(ModerationController.class);
 
-    public ModerationController(@Nonnull PremoderationQueueService premoderationQueueService) {
+    private final PremoderationQueueService premoderationQueueService;
+    private final AdminController adminController;
+
+    public ModerationController(@Nonnull PremoderationQueueService premoderationQueueService,
+                                @Nonnull AdminController adminController) {
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
+        this.adminController = requireNonNull(adminController, "adminController");
     }
 
     @GetMapping("/posts/page/{page}/")
     public String posts(Model model, @PathVariable("page") int page) {
+        log.info("posts(): page={}", page);
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
         List<Post> viewPosts = premoderationQueueService.getPosts(offsetInfo.getLimit(), offsetInfo.getOffset())
@@ -48,11 +59,24 @@ public class ModerationController {
         return VIEW_MODERATION_POSTS;
     }
 
+    @GetMapping("/posts/{id}/")
+    public String post(Model model, @PathVariable("id") long id) {
+        log.info("post(): id={}", id);
+        Optional<UnmoderatedPost> unmoderatedPost = premoderationQueueService.getPost(id);
+        if (unmoderatedPost.isEmpty()) {
+            log.error("Post not found: id={}", id);
+            return adminController.error404();
+        }
+
+        model.addAttribute("post", toPost(unmoderatedPost.get()));
+        return VIEW_MODERATION_POST;
+    }
+
     private static Post toPost(UnmoderatedPost unmoderatedPost) {
         return Post.builder()
                 .setId(unmoderatedPost.getId().orElse(null))
                 .setChannel(Channel.getById(unmoderatedPost.getChannelId()).getName())
-                .setText(unmoderatedPost.getText())
+                .setText(unmoderatedPost.getText().orElse(null))
                 .setImages(unmoderatedPost.getImages())
                 .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format)
                         .orElse(null))

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static ru.skogmark.aggregator.AggregatorApplication.PROFILE_TEST;
 
@@ -42,6 +43,17 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
     @Override
     public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
         // doing nothing
+    }
+
+    @Override
+    public Optional<UnmoderatedPost> getPost(long id) {
+        return Optional.of(UnmoderatedPost.builder()
+                .setId(1L)
+                .setChannelId(1)
+                .setText("Text of the first post")
+                .setImages(List.of("img1", "img2"))
+                .setCreatedDt(ZonedDateTime.now())
+                .build());
     }
 
     @Override

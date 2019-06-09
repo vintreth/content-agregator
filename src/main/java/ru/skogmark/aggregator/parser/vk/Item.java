@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -17,10 +18,10 @@ class Item {
 
     @JsonCreator
     Item(@JsonProperty("id") @Nonnull Long id,
-         @JsonProperty("text") @Nonnull String text,
+         @JsonProperty("text") @Nullable String text,
          @JsonProperty("attachments") @Nullable List<Attachment> attachments) {
         this.id = requireNonNull(id, "id");
-        this.text = requireNonNull(text, "text");
+        this.text = text;
         this.attachments = attachments == null ? Collections.emptyList() : Collections.unmodifiableList(attachments);
     }
 
@@ -39,8 +40,8 @@ class Item {
     }
 
     @Nonnull
-    String getText() {
-        return text;
+    Optional<String> getText() {
+        return Optional.ofNullable(text);
     }
 
     @Nonnull
