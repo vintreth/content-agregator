@@ -9,18 +9,24 @@ import static java.util.Objects.requireNonNull;
 
 public class Post {
     private final Long id;
-    private final String channel; // todo add channel id
+    private final String channel;
+    private final Integer channelId;
+    private final String title;
     private final String text;
     private final List<String> images;
     private final String createdDt;
 
     private Post(@Nonnull Long id,
                  @Nonnull String channel,
+                 @Nonnull Integer channelId,
+                 @Nullable String title,
                  @Nullable String text,
                  @Nullable List<String> images,
                  @Nullable String createdDt) {
         this.id = requireNonNull(id, "id");
         this.channel = requireNonNull(channel, "channel");
+        this.channelId = requireNonNull(channelId, "channelId");
+        this.title = title;
         this.text = text;
         this.images = images == null ? Collections.emptyList() : List.copyOf(images);
         this.createdDt = createdDt;
@@ -31,6 +37,8 @@ public class Post {
         return "Post{" +
                 "id=" + id +
                 ", channel='" + channel + '\'' +
+                ", channelId=" + channelId +
+                ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", createdDt='" + createdDt + '\'' +
@@ -45,12 +53,24 @@ public class Post {
         return channel;
     }
 
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
     public String getText() {
         return text;
     }
 
     public List<String> getImages() {
         return images;
+    }
+
+    public int getImagesSize() {
+        return images.size();
     }
 
     public String getCreatedDt() {
@@ -64,6 +84,8 @@ public class Post {
     public static class Builder {
         private Long id;
         private String channel;
+        private Integer channelId;
+        private String title;
         private String text;
         private List<String> images;
         private String createdDt;
@@ -72,7 +94,7 @@ public class Post {
         }
 
         public Post build() {
-            return new Post(id, channel, text, images, createdDt);
+            return new Post(id, channel, channelId, title, text, images, createdDt);
         }
 
         public Builder setId(Long id) {
@@ -82,6 +104,16 @@ public class Post {
 
         public Builder setChannel(String channel) {
             this.channel = channel;
+            return this;
+        }
+
+        public Builder setChannelId(Integer channelId) {
+            this.channelId = channelId;
+            return this;
+        }
+
+        public Builder setTitle(String title) {
+            this.title = title;
             return this;
         }
 

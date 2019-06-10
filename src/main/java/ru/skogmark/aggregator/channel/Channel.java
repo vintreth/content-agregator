@@ -3,7 +3,9 @@ package ru.skogmark.aggregator.channel;
 import java.util.Arrays;
 
 public enum Channel {
-    MEMES(1, "Memes");
+    MEMES(1, "Memes"),
+    CHANNEL_2(2, "Channel 2"),
+    CHANNEL_3(3, "Channel 3");
 
     private final int id;
     private final String name;

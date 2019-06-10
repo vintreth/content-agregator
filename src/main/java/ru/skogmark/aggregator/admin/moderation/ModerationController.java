@@ -2,11 +2,10 @@ package ru.skogmark.aggregator.admin.moderation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.skogmark.aggregator.admin.AdminController;
 import ru.skogmark.aggregator.admin.Paginator;
 import ru.skogmark.aggregator.channel.Channel;
@@ -15,7 +14,9 @@ import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import javax.annotation.Nonnull;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class ModerationController {
     }
 
     @GetMapping("/posts/page/{page}/")
-    public String posts(Model model, @PathVariable("page") int page) {
+    public String getPosts(Model model, @PathVariable("page") int page) {
         log.info("posts(): page={}", page);
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
@@ -60,7 +61,7 @@ public class ModerationController {
     }
 
     @GetMapping("/posts/{id}/")
-    public String post(Model model, @PathVariable("id") long id) {
+    public String getPost(Model model, @PathVariable("id") long id) {
         log.info("post(): id={}", id);
         Optional<UnmoderatedPost> unmoderatedPost = premoderationQueueService.getPost(id);
         if (unmoderatedPost.isEmpty()) {
@@ -68,14 +69,27 @@ public class ModerationController {
             return adminController.error404();
         }
 
-        model.addAttribute("post", toPost(unmoderatedPost.get()));
+        Post post = toPost(unmoderatedPost.get());
+        model.addAttribute("post", post);
+        model.addAttribute("channels", Arrays.stream(Channel.values())
+                .filter(channel -> channel.getId() != post.getChannelId())
+                .collect(Collectors.toList()));
+        return VIEW_MODERATION_POST;
+    }
+
+    @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
+        log.info("form={}", form);
         return VIEW_MODERATION_POST;
     }
 
     private static Post toPost(UnmoderatedPost unmoderatedPost) {
+        Channel channel = Channel.getById(unmoderatedPost.getChannelId());
         return Post.builder()
                 .setId(unmoderatedPost.getId().orElse(null))
-                .setChannel(Channel.getById(unmoderatedPost.getChannelId()).getName())
+                .setChannel(channel.getName())
+                .setChannelId(channel.getId())
+                // todo set title
                 .setText(unmoderatedPost.getText().orElse(null))
                 .setImages(unmoderatedPost.getImages())
                 .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format)
