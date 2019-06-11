@@ -15,6 +15,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Канал</th>
+                                <th>Заголовок</th>
                                 <th>Текст</th>
                                 <th>Изображение</th>
                                 <th>Время создания</th>
@@ -23,6 +24,7 @@
                                 <tr>
                                     <td><a href="/admin/moderation/posts/${post.id}/">${post.id}</a></td>
                                     <td>${post.channel}</td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.title}</a></td>
                                     <td><a href="/admin/moderation/posts/${post.id}/">${post.text}</a></td>
                                     <td>
                                         <c:if test="${post.imagesSize > 0}">

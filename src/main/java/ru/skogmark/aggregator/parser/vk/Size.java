@@ -10,18 +10,18 @@ import static java.util.Objects.requireNonNull;
 class Size {
     private final String type;
     private final String url;
-    private final int width;
-    private final int height;
+    private final Integer width;
+    private final Integer height;
 
     @JsonCreator
     Size(@JsonProperty("type") @Nonnull String type,
          @JsonProperty("url") @Nonnull String url,
-         @JsonProperty("width") int width,
-         @JsonProperty("height") int height) {
+         @JsonProperty("width") @Nonnull Integer width,
+         @JsonProperty("height") @Nonnull Integer height) {
         this.type = requireNonNull(type, "type");
         this.url = requireNonNull(url, "url");
-        this.width = width;
-        this.height = height;
+        this.width = requireNonNull(width, "width");
+        this.height = requireNonNull(height, "height");
     }
 
     @Override
@@ -34,21 +34,27 @@ class Size {
                 '}';
     }
 
+    @JsonProperty("type")
     @Nonnull
     String getType() {
         return type;
     }
 
+    @JsonProperty("url")
     @Nonnull
     String getUrl() {
         return url;
     }
 
-    int getWidth() {
+    @JsonProperty("width")
+    @Nonnull
+    Integer getWidth() {
         return width;
     }
 
-    int getHeight() {
+    @JsonProperty("height")
+    @Nonnull
+    Integer getHeight() {
         return height;
     }
 }

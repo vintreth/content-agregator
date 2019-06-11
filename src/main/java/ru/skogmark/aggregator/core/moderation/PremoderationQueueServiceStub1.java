@@ -2,6 +2,7 @@ package ru.skogmark.aggregator.core.moderation;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import ru.skogmark.aggregator.core.PostImage;
 
 import javax.annotation.Nonnull;
 import java.time.ZonedDateTime;
@@ -21,21 +22,51 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                         .setId(1L)
                         .setChannelId(1)
                         .setText("Text of the first post")
-                        .setImages(List.of("img1", "img2"))
+                        .setImages(List.of(
+                                PostImage.builder()
+                                        .setSrc("img0")
+                                        .setWidth(640)
+                                        .setHeight(480)
+                                        .build(),
+                                PostImage.builder()
+                                        .setSrc("img1")
+                                        .setWidth(1024)
+                                        .setHeight(768)
+                                        .build()))
                         .setCreatedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(2L)
                         .setChannelId(1)
                         .setText("Text of the second post")
-                        .setImages(List.of("img3", "img4"))
+                        .setImages(List.of(
+                                PostImage.builder()
+                                        .setSrc("img0")
+                                        .setWidth(640)
+                                        .setHeight(480)
+                                        .build(),
+                                PostImage.builder()
+                                        .setSrc("img1")
+                                        .setWidth(1024)
+                                        .setHeight(768)
+                                        .build()))
                         .setCreatedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(3L)
                         .setChannelId(1)
                         .setText("Text of the third post")
-                        .setImages(List.of("img5", "img6"))
+                        .setImages(List.of(
+                                PostImage.builder()
+                                        .setSrc("img0")
+                                        .setWidth(640)
+                                        .setHeight(480)
+                                        .build(),
+                                PostImage.builder()
+                                        .setSrc("img1")
+                                        .setWidth(1024)
+                                        .setHeight(768)
+                                        .build()))
                         .setCreatedDt(now)
                         .build());
     }
@@ -52,16 +83,26 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                 .setChannelId(1)
                 .setText("Text of the first post")
                 .setImages(List.of(
-                        "https://sun9-34.userapi.com/c856128/v856128579/51413/G3-dcoxzNMY.jpg", 
-                        "https://sun9-24.userapi.com/c856128/v856128579/51418/g7SqbFXFpk4.jpg",
-                        "https://sun9-12.userapi.com/c856128/v856128579/51419/IHTU9-v-rEk.jpg",
-                        "https://sun9-25.userapi.com/c856128/v856128579/5141a/eid6fUJh0no.jpg",
-                        "https://sun9-4.userapi.com/c856128/v856128579/5141b/WTv8H9JNoEE.jpg",
-                        "https://sun9-4.userapi.com/c856128/v856128579/51412/RE4OlADmy1w.jpg",
-                        "https://sun9-30.userapi.com/c856128/v856128579/51417/vdTF_IM9ZZc.jpg",
-                        "https://sun9-1.userapi.com/c856128/v856128579/51414/ObU6M2WIdUc.jpg",
-                        "https://sun9-21.userapi.com/c856128/v856128579/51415/LPqNVKREkCw.jpg",
-                        "https://sun9-18.userapi.com/c856128/v856128579/51416/zR-BieG1tRo.jpg"))
+                        PostImage.builder()
+                                .setSrc("https://sun9-34.userapi.com/c856128/v856128579/51413/G3-dcoxzNMY.jpg")
+                                .setWidth(130)
+                                .setHeight(97)
+                                .build(),
+                        PostImage.builder()
+                                .setSrc("https://sun9-24.userapi.com/c856128/v856128579/51418/g7SqbFXFpk4.jpg")
+                                .setWidth(130)
+                                .setHeight(98)
+                                .build(),
+                        PostImage.builder()
+                                .setSrc("https://sun9-12.userapi.com/c856128/v856128579/51419/IHTU9-v-rEk.jpg")
+                                .setWidth(200)
+                                .setHeight(150)
+                                .build(),
+                        PostImage.builder()
+                                .setSrc("https://sun9-21.userapi.com/c856128/v856128579/51415/LPqNVKREkCw.jpg")
+                                .setWidth(807)
+                                .setHeight(605)
+                                .build()))
                 .setCreatedDt(ZonedDateTime.now())
                 .build());
     }

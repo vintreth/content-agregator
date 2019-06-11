@@ -1,11 +1,12 @@
 package ru.skogmark.aggregator.core.moderation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import ru.skogmark.aggregator.ApplicationContextAwareTest;
+import ru.skogmark.aggregator.core.PostImage;
 
 import java.util.List;
 
@@ -13,17 +14,30 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class PremoderationQueueDaoTest {
+public class PremoderationQueueDaoTest extends ApplicationContextAwareTest {
+    @Autowired
+    private UnmoderatedPostMapper mapper;
+
     @Test
     public void shouldMapParamsCorrectlyWhenInserting() {
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
-        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, new ObjectMapper());
+        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, mapper);
         UnmoderatedPost post = UnmoderatedPost.builder()
                 .setChannelId(453453)
+                .setTitle("title")
                 .setText("test text of post with some info")
-                .setImages(Lists.newArrayList("http://localhost/image0", "http://localhost/image1",
-                        "http://localhost/image2"))
+                .setImages(List.of(
+                        PostImage.builder()
+                                .setSrc("img4")
+                                .setWidth(640)
+                                .setHeight(480)
+                                .build(),
+                        PostImage.builder()
+                                .setSrc("img5")
+                                .setWidth(1024)
+                                .setHeight(768)
+                                .build()))
                 .build();
 
         dao.insertPost(post);
@@ -32,8 +46,9 @@ public class PremoderationQueueDaoTest {
         verify(jdbcTemplate, times(1))
                 .queryForObject(any(), captor.capture(), (Class<List>) any());
         assertEquals(453453, captor.getValue().getValue("channelId"));
+        assertEquals("title", captor.getValue().getValue("title"));
         assertEquals("test text of post with some info", captor.getValue().getValue("text"));
-        assertEquals("[\"http://localhost/image0\",\"http://localhost/image1\",\"http://localhost/image2\"]",
+        assertEquals("{\"images\":[{\"src\":\"img4\",\"width\":640,\"height\":480},{\"src\":\"img5\",\"width\":1024,\"height\":768}]}",
                 captor.getValue().getValue("images"));
     }
 }

@@ -93,10 +93,10 @@ public class VkApiParserTest {
                 actualItem.getImages().size());
         assertEquals(
                 expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(0).getUrl(),
-                actualItem.getImages().get(0));
+                actualItem.getImages().get(0).getSrc());
         assertEquals(
                 expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(1).getUrl(),
-                actualItem.getImages().get(1));
+                actualItem.getImages().get(1).getSrc());
     }
 
     private VkApiResult createResult() {

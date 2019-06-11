@@ -1,5 +1,7 @@
 package ru.skogmark.aggregator.core.content;
 
+import ru.skogmark.aggregator.core.PostImage;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -10,11 +12,16 @@ import static java.util.Objects.requireNonNull;
 
 public class ContentPost {
     private final Long externalId;
+    private final String title;
     private final String text;
-    private final List<String> images;
+    private final List<PostImage> images;
 
-    private ContentPost(@Nonnull Long externalId, @Nullable String text, @Nullable List<String> images) {
+    private ContentPost(@Nonnull Long externalId,
+                        @Nullable String title,
+                        @Nullable String text,
+                        @Nullable List<PostImage> images) {
         this.externalId = requireNonNull(externalId, "externalId");
+        this.title = title;
         this.text = text;
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
     }
@@ -23,6 +30,7 @@ public class ContentPost {
     public String toString() {
         return "ContentPost{" +
                 "externalId=" + externalId +
+                ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 '}';
@@ -34,12 +42,17 @@ public class ContentPost {
     }
 
     @Nonnull
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
+    }
+
+    @Nonnull
     public Optional<String> getText() {
         return Optional.ofNullable(text);
     }
 
     @Nonnull
-    public List<String> getImages() {
+    public List<PostImage> getImages() {
         return images;
     }
 
@@ -49,18 +62,24 @@ public class ContentPost {
 
     public static class Builder {
         private Long externalId;
+        private String title;
         private String text;
-        private List<String> images;
+        private List<PostImage> images;
 
         private Builder() {
         }
 
         public ContentPost build() {
-            return new ContentPost(externalId, text, images);
+            return new ContentPost(externalId, title, text, images);
         }
 
         public Builder setExternalId(Long externalId) {
             this.externalId = externalId;
+            return this;
+        }
+
+        public Builder setTitle(String title) {
+            this.title = title;
             return this;
         }
 
@@ -69,7 +88,7 @@ public class ContentPost {
             return this;
         }
 
-        public Builder setImages(List<String> images) {
+        public Builder setImages(List<PostImage> images) {
             this.images = images;
             return this;
         }

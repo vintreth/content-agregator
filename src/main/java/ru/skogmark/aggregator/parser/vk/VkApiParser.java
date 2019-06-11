@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.skogmark.aggregator.channel.Source;
+import ru.skogmark.aggregator.core.PostImage;
 import ru.skogmark.aggregator.core.content.Content;
 import ru.skogmark.aggregator.core.content.ContentPost;
 import ru.skogmark.aggregator.core.content.Parser;
@@ -70,8 +71,12 @@ public class VkApiParser implements Parser {
                 .setText(item.getText().orElse(null));
         if (!item.getAttachments().isEmpty()) {
             getPhoto(item.getAttachments()).ifPresent(photo -> {
-                List<String> images = photo.getSizes().stream()
-                        .map(Size::getUrl)
+                List<PostImage> images = photo.getSizes().stream()
+                        .map(size -> PostImage.builder()
+                                .setSrc(size.getUrl())
+                                .setWidth(size.getWidth())
+                                .setHeight(size.getHeight())
+                                .build())
                         .collect(Collectors.toList());
                 builder.setImages(images);
             });

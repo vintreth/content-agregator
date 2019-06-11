@@ -48,13 +48,35 @@ public class WorkerTest {
         Content content = new Content(List.of(
                 ContentPost.builder()
                         .setExternalId(53533135L)
+                        .setTitle("title0")
                         .setText("text0")
-                        .setImages(List.of("img0", "img1", "img2"))
+                        .setImages(List.of(
+                                PostImage.builder()
+                                        .setSrc("img0")
+                                        .setWidth(640)
+                                        .setHeight(480)
+                                        .build(),
+                                PostImage.builder()
+                                        .setSrc("img1")
+                                        .setWidth(1024)
+                                        .setHeight(768)
+                                        .build()))
                         .build(),
                 ContentPost.builder()
                         .setExternalId(53533136L)
+                        .setTitle("title1")
                         .setText("text1")
-                        .setImages(List.of("img3", "img4", "img5"))
+                        .setImages(List.of(
+                                PostImage.builder()
+                                        .setSrc("img2")
+                                        .setWidth(640)
+                                        .setHeight(480)
+                                        .build(),
+                                PostImage.builder()
+                                        .setSrc("img3")
+                                        .setWidth(1024)
+                                        .setHeight(768)
+                                        .build()))
                         .build()), 1002L);
         SourceContext sourceContext = SourceContext.builder()
                 .setSourceId(1)
@@ -82,7 +104,8 @@ public class WorkerTest {
     private static void assertPost(ContentPost expectedPost, UnmoderatedPost actualPost) {
         assertFalse(actualPost.getId().isPresent());
         assertEquals(1, actualPost.getChannelId().intValue());
-        assertEquals(expectedPost.getText().orElse(null), actualPost.getText().orElse(null));
+        assertEquals(expectedPost.getTitle(), actualPost.getTitle());
+        assertEquals(expectedPost.getText(), actualPost.getText());
         assertEquals(expectedPost.getImages().size(), actualPost.getImages().size());
         assertTrue(expectedPost.getImages().containsAll(actualPost.getImages()));
         assertFalse(actualPost.getCreatedDt().isPresent());

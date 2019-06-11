@@ -1,5 +1,7 @@
 package ru.skogmark.aggregator.core.moderation;
 
+import ru.skogmark.aggregator.core.PostImage;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
@@ -12,17 +14,20 @@ import static java.util.Objects.requireNonNull;
 public class UnmoderatedPost {
     private final Long id;
     private final Integer channelId;
+    private final String title;
     private final String text;
-    private final List<String> images;
+    private final List<PostImage> images;
     private final ZonedDateTime createdDt;
 
     private UnmoderatedPost(@Nullable Long id,
                             @Nonnull Integer channelId,
+                            @Nullable String title,
                             @Nullable String text,
-                            @Nullable List<String> images,
+                            @Nullable List<PostImage> images,
                             @Nullable ZonedDateTime createdDt) {
         this.id = id;
         this.channelId = requireNonNull(channelId, "channelId");
+        this.title = title;
         this.text = text;
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
         this.createdDt = createdDt;
@@ -39,12 +44,17 @@ public class UnmoderatedPost {
     }
 
     @Nonnull
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
+    }
+
+    @Nonnull
     public Optional<String> getText() {
         return Optional.ofNullable(text);
     }
 
     @Nonnull
-    public List<String> getImages() {
+    public List<PostImage> getImages() {
         return images;
     }
 
@@ -58,6 +68,7 @@ public class UnmoderatedPost {
         return "UnmoderatedPost{" +
                 "id=" + id +
                 ", channelId=" + channelId +
+                ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", createdDt=" + createdDt +
@@ -68,6 +79,7 @@ public class UnmoderatedPost {
         return builder()
                 .setId(id)
                 .setChannelId(channelId)
+                .setTitle(title)
                 .setText(text)
                 .setImages(images)
                 .setCreatedDt(createdDt);
@@ -80,8 +92,9 @@ public class UnmoderatedPost {
     public static class Builder {
         private Long id;
         private Integer channelId;
+        private String title;
         private String text;
-        private List<String> images;
+        private List<PostImage> images;
         private ZonedDateTime createdDt;
 
         private Builder() {
@@ -97,12 +110,17 @@ public class UnmoderatedPost {
             return this;
         }
 
+        public Builder setTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
         public Builder setText(String text) {
             this.text = text;
             return this;
         }
 
-        public Builder setImages(List<String> images) {
+        public Builder setImages(List<PostImage> images) {
             this.images = images;
             return this;
         }
@@ -113,7 +131,7 @@ public class UnmoderatedPost {
         }
 
         public UnmoderatedPost build() {
-            return new UnmoderatedPost(id, channelId, text, images, createdDt);
+            return new UnmoderatedPost(id, channelId, title, text, images, createdDt);
         }
     }
 }

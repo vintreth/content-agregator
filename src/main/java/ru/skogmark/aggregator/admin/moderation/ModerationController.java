@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.skogmark.aggregator.admin.AdminController;
 import ru.skogmark.aggregator.admin.Paginator;
 import ru.skogmark.aggregator.channel.Channel;
+import ru.skogmark.aggregator.core.PostImage;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
@@ -89,11 +90,23 @@ public class ModerationController {
                 .setId(unmoderatedPost.getId().orElse(null))
                 .setChannel(channel.getName())
                 .setChannelId(channel.getId())
-                // todo set title
+                .setTitle(unmoderatedPost.getTitle().orElse(null))
                 .setText(unmoderatedPost.getText().orElse(null))
-                .setImages(unmoderatedPost.getImages())
+                .setImages(unmoderatedPost.getImages().stream()
+                        .map(ModerationController::toImage)
+                        .collect(Collectors.toList()))
                 .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format)
                         .orElse(null))
                 .build();
+    }
+
+    @Nonnull
+    static Image toImage(@Nonnull PostImage postImage) {
+        requireNonNull(postImage, "postImage");
+        String title = postImage.getSrc().replaceAll("^.*/([\\-\\w]+\\.\\w+)", "$1");
+        if (postImage.getWidth().isPresent() && postImage.getHeight().isPresent()) {
+            title += " [" + postImage.getWidth().get() + 'x' + postImage.getHeight().get() + ']';
+        }
+        return new Image(postImage.getSrc(), title);
     }
 }

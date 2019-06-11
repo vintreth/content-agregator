@@ -13,7 +13,7 @@ public class Post {
     private final Integer channelId;
     private final String title;
     private final String text;
-    private final List<String> images;
+    private final List<Image> images;
     private final String createdDt;
 
     private Post(@Nonnull Long id,
@@ -21,7 +21,7 @@ public class Post {
                  @Nonnull Integer channelId,
                  @Nullable String title,
                  @Nullable String text,
-                 @Nullable List<String> images,
+                 @Nullable List<Image> images,
                  @Nullable String createdDt) {
         this.id = requireNonNull(id, "id");
         this.channel = requireNonNull(channel, "channel");
@@ -65,7 +65,7 @@ public class Post {
         return text;
     }
 
-    public List<String> getImages() {
+    public List<Image> getImages() {
         return images;
     }
 
@@ -87,7 +87,7 @@ public class Post {
         private Integer channelId;
         private String title;
         private String text;
-        private List<String> images;
+        private List<Image> images;
         private String createdDt;
 
         private Builder() {
@@ -122,7 +122,7 @@ public class Post {
             return this;
         }
 
-        public Builder setImages(List<String> images) {
+        public Builder setImages(List<Image> images) {
             this.images = images;
             return this;
         }

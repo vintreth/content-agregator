@@ -28,14 +28,8 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
     }
 
     @Override
-    public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
-        requireNonNull(posts, "posts");
-        log.info("enqueuePosts(): posts={}", posts);
-        transactionTemplate.execute(status -> {
-            // todo batch insert
-            posts.forEach(premoderationQueueDao::insertPost);
-            return null;
-        });
+    public Optional<UnmoderatedPost> getPost(long id) {
+        return premoderationQueueDao.getPost(id);
     }
 
     @Override
@@ -44,12 +38,18 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
     }
 
     @Override
-    public Optional<UnmoderatedPost> getPost(long id) {
-        return Optional.empty();
+    public long getPostsCount() {
+        return premoderationQueueDao.getPostsCount();
     }
 
     @Override
-    public long getPostsCount() {
-        return premoderationQueueDao.getPostsCount();
+    public void enqueuePosts(@Nonnull List<UnmoderatedPost> posts) {
+        requireNonNull(posts, "posts");
+        log.info("enqueuePosts(): posts={}", posts);
+        transactionTemplate.execute(status -> {
+            // todo batch insert
+            posts.forEach(premoderationQueueDao::insertPost);
+            return null;
+        });
     }
 }
