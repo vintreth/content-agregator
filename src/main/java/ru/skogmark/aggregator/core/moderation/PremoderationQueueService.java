@@ -12,4 +12,6 @@ public interface PremoderationQueueService {
     long getPostsCount();
 
     void enqueuePosts(@Nonnull List<UnmoderatedPost> posts);
+
+    boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost);
 }

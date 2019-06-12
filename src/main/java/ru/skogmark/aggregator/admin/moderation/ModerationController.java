@@ -15,10 +15,7 @@ import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import javax.annotation.Nonnull;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -31,6 +28,8 @@ public class ModerationController {
     private static final String CATEGORY_MODERATION = "admin/moderation";
     private static final String VIEW_MODERATION_POSTS = CATEGORY_MODERATION + "/posts";
     private static final String VIEW_MODERATION_POST = CATEGORY_MODERATION + "/post";
+    private static final String VIEW_MODERATION_POST_SAVED = CATEGORY_MODERATION + "/postSaved";
+    private static final String VIEW_MODERATION_POST_SAVE_ERROR = CATEGORY_MODERATION + "/postSaveError";
 
     private static final int DEFAULT_ON_PAGE_COUNT = 20;
 
@@ -38,16 +37,19 @@ public class ModerationController {
 
     private final PremoderationQueueService premoderationQueueService;
     private final AdminController adminController;
+    private final PostFormValidator postFormValidator;
 
     public ModerationController(@Nonnull PremoderationQueueService premoderationQueueService,
-                                @Nonnull AdminController adminController) {
+                                @Nonnull AdminController adminController,
+                                @Nonnull PostFormValidator postFormValidator) {
         this.premoderationQueueService = requireNonNull(premoderationQueueService, "premoderationQueueService");
         this.adminController = requireNonNull(adminController, "adminController");
+        this.postFormValidator = requireNonNull(postFormValidator, "postFormValidator");
     }
 
     @GetMapping("/posts/page/{page}/")
     public String getPosts(Model model, @PathVariable("page") int page) {
-        log.info("posts(): page={}", page);
+        log.info("getPosts(): page={}", page);
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
         List<Post> viewPosts = premoderationQueueService.getPosts(offsetInfo.getLimit(), offsetInfo.getOffset())
@@ -63,7 +65,7 @@ public class ModerationController {
 
     @GetMapping("/posts/{id}/")
     public String getPost(Model model, @PathVariable("id") long id) {
-        log.info("post(): id={}", id);
+        log.info("getPost(): id={}", id);
         Optional<UnmoderatedPost> unmoderatedPost = premoderationQueueService.getPost(id);
         if (unmoderatedPost.isEmpty()) {
             log.error("Post not found: id={}", id);
@@ -80,8 +82,48 @@ public class ModerationController {
 
     @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
-        log.info("form={}", form);
-        return VIEW_MODERATION_POST;
+        log.info("savePost(): id={}, form={}", id, form);
+        PostForm postForm = new PostForm(form);
+        Optional<PostFormValidator.ValidationError> validationError = postFormValidator.validateForm(postForm);
+        if (validationError.isPresent()) {
+            log.error("Form data is invalid: validationError={}", validationError.get());
+            model.addAttribute("postId", id);
+            model.addAttribute("errorDescription", validationError.get().getDescription());
+            model.addAttribute("errorName", validationError.get().name());
+            return VIEW_MODERATION_POST_SAVE_ERROR;
+        }
+
+        Optional<UnmoderatedPost> existedPost = premoderationQueueService.getPost(id);
+        if (existedPost.isEmpty()) {
+            log.error("Post does not exist: postId={}", id);
+            model.addAttribute("postId", id);
+            model.addAttribute("errorDescription", "Поста по заданному идентификатору не существует");
+            model.addAttribute("errorName", "POST_NOT_FOUND");
+            return VIEW_MODERATION_POST_SAVE_ERROR;
+        }
+
+        UnmoderatedPost postToUpdate = existedPost.get().copy()
+                .setChannelId(Integer.parseInt(postForm.getChannelId()))
+                .setTitle(postForm.getTitle())
+                .setText(postForm.getText())
+                .setImages(postForm.getImage() != null
+                        ? Collections.singletonList(
+                        existedPost.get().getImages().get(Integer.parseInt(postForm.getImage())))
+                        : null)
+                .build();
+        if (!premoderationQueueService.updatePost(postToUpdate)) {
+            log.error("Update failed: post={}", postToUpdate);
+            model.addAttribute("postId", id);
+            model.addAttribute("errorDescription", "Не удалось обновить данные поста");
+            model.addAttribute("errorName", "UPDATE_FAILED");
+            return VIEW_MODERATION_POST_SAVE_ERROR;
+        }
+
+        if (postForm.isPublish()) {
+            // todo publish
+        }
+
+        return VIEW_MODERATION_POST_SAVED;
     }
 
     private static Post toPost(UnmoderatedPost unmoderatedPost) {

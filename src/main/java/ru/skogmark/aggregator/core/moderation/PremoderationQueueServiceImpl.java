@@ -52,4 +52,9 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
             return null;
         });
     }
+
+    @Override
+    public boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost) {
+        return false;
+    }
 }

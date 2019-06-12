@@ -17,7 +17,7 @@
                                 <th>Канал</th>
                                 <th>Заголовок</th>
                                 <th>Текст</th>
-                                <th>Изображение</th>
+                                <th>Изображения</th>
                                 <th>Время создания</th>
                             </tr>
                             <c:forEach items="${posts}" var="post">
@@ -28,7 +28,7 @@
                                     <td><a href="/admin/moderation/posts/${post.id}/">${post.text}</a></td>
                                     <td>
                                         <c:if test="${post.imagesSize > 0}">
-                                            <span class="label label-success label-rounded">Да</span>
+                                            <span class="label label-success label-rounded">${post.imagesSize}</span>
                                         </c:if>
                                         <c:if test="${post.imagesSize <= 0}">
                                             <span class="label label-danger label-rounded">Нет</span>

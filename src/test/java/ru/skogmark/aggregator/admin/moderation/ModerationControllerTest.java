@@ -96,7 +96,7 @@ public class ModerationControllerTest extends JspEndpointTest {
         assertEquals("Канал", header.get(1).text());
         assertEquals("Заголовок", header.get(2).text());
         assertEquals("Текст", header.get(3).text());
-        assertEquals("Изображение", header.get(4).text());
+        assertEquals("Изображения", header.get(4).text());
         assertEquals("Время создания", header.get(5).text());
 
         assertRow(posts.get(0), rows.get(1));
@@ -117,7 +117,7 @@ public class ModerationControllerTest extends JspEndpointTest {
         if (expectedData.getImages().isEmpty()) {
             assertEquals("Нет", span.get(0).text());
         } else {
-            assertEquals("Да", span.get(0).text());
+            assertEquals(String.valueOf(expectedData.getImages().size()), span.get(0).text());
         }
 
         assertEquals(ModerationController.viewTimeFormatter.format(expectedData.getCreatedDt().get()),

@@ -111,4 +111,9 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
     public long getPostsCount() {
         return 0;
     }
+
+    @Override
+    public boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost) {
+        return false;
+    }
 }

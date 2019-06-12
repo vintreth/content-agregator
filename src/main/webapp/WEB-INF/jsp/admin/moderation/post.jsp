@@ -30,7 +30,7 @@
                                 <div class="col-sm-4">
                                     <c:forEach items="${post.images}" var="image" varStatus="counter">
                                         <div class="custom-control custom-radio">
-                                            <input type="radio" id="image-${counter.count}" name="customRadio" value="${counter.count}" class="custom-control-input">
+                                            <input type="radio" id="image-${counter.count}" name="image" value="${counter.count}" class="custom-control-input">
                                             <label class="custom-control-label" for="image-${counter.count}">${image.title}</label>
                                             <a href="${image.src}"><img src="${image.src}" alt="${image.title}" width="480"/></a>
                                         </div>
@@ -42,7 +42,7 @@
                                 <select class="custom-select col-12" id="inlineFormCustomSelect" name="channelId">
                                     <option value="${post.channelId}" selected>${post.channel}</option>
                                     <c:forEach items="${channels}" var="channel">
-                                        <option value="${channel.id}" selected>${channel.name}</option>
+                                        <option value="${channel.id}">${channel.name}</option>
                                     </c:forEach>
                                 </select>
                             </div>
