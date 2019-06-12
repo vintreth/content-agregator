@@ -19,6 +19,7 @@
                                 <th>Текст</th>
                                 <th>Изображения</th>
                                 <th>Время создания</th>
+                                <th>Время изменения</th>
                             </tr>
                             <c:forEach items="${posts}" var="post">
                                 <tr>
@@ -35,6 +36,7 @@
                                         </c:if>
                                     </td>
                                     <td>${post.createdDt}</td>
+                                    <td>${post.changedDt}</td>
                                 </tr>
                             </c:forEach>
                         </table>

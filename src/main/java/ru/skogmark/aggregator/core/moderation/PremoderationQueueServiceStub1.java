@@ -119,11 +119,11 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
 
     @Override
     public boolean updatePost(@Nonnull UnmoderatedPost post) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean publishPost(long id) {
-        return false;
+        return true;
     }
 }

@@ -72,20 +72,19 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
             log.error("Post not found: id={}", id);
             return false;
         }
-        TopicPost publishedPost = transactionTemplate.execute(status -> {
-            TopicPost topicPost = topicService.addPost(toTopicPost(unmoderatedPost.get()));
+        return transactionTemplate.execute(status -> {
+            TopicPost publishedPost = topicService.addPost(toTopicPost(unmoderatedPost.get()));
             if (!deletePost(id)) {
                 log.error("Unable to delete unmoderatedPost: id={}", id);
-                // todo return
+                return false;
             }
-            return topicPost;
+            log.info("Post published: post={}", publishedPost);
+            return true;
         });
-        // todo impl
-        return true;
     }
 
     private boolean deletePost(long id) {
-        return false; // todo
+        return transactionTemplate.execute(status -> premoderationQueueDao.deletePost(id));
     }
 
     private static TopicPost toTopicPost(UnmoderatedPost unmoderatedPost) {

@@ -63,6 +63,7 @@ public class ModerationController {
         return VIEW_MODERATION_POSTS;
     }
 
+    //todo test
     @GetMapping("/posts/{id}/")
     public String getPost(Model model, @PathVariable("id") long id) {
         log.info("getPost(): id={}", id);
@@ -80,6 +81,7 @@ public class ModerationController {
         return VIEW_MODERATION_POST;
     }
 
+    // todo test
     @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
         log.info("savePost(): id={}, form={}", id, form);

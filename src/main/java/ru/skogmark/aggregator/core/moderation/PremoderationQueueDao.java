@@ -77,7 +77,8 @@ class PremoderationQueueDao {
     // todo test
     boolean updatePost(@Nonnull UnmoderatedPost post) {
         requireNonNull(post, "post");
-        return jdbcTemplate.update("update premoderation_queue set" +
+        log.info("updatePost(): post={}", post);
+        boolean updated = jdbcTemplate.update("update premoderation_queue set" +
                         " channel_id = :channelId" +
                         ", title = :title" +
                         ", text = :text" +
@@ -90,5 +91,23 @@ class PremoderationQueueDao {
                         .addValue("text", post.getText().orElse(null))
                         .addValue("images", unmoderatedPostMapper.getSerializedValue(post.getImages()))
                         .addValue("id", post.getId().get())) > 0;
+        if (updated) {
+            log.info("Post updated: post={}", post);
+        } else {
+            log.info("Post not updated: post={}", post);
+        }
+        return updated;
+    }
+
+    boolean deletePost(long id) {
+        log.info("deletePost(): id={}", id);
+        boolean deleted = jdbcTemplate.update("delete from premoderation_queue where id = :id",
+                new MapSqlParameterSource("id", id)) > 0;
+        if (deleted) {
+            log.info("Post deleted: id={}", id);
+        } else {
+            log.info("Post not deleted: id={}", id);
+        }
+        return deleted;
     }
 }

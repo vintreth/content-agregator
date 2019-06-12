@@ -94,13 +94,14 @@ public class ModerationControllerTest extends JspEndpointTest {
         assertEquals(4, rows.size());
 
         Elements header = rows.get(0).getElementsByTag("th");
-        assertEquals(6, header.size());
+        assertEquals(7, header.size());
         assertEquals("#", header.get(0).text());
         assertEquals("Канал", header.get(1).text());
         assertEquals("Заголовок", header.get(2).text());
         assertEquals("Текст", header.get(3).text());
         assertEquals("Изображения", header.get(4).text());
         assertEquals("Время создания", header.get(5).text());
+        assertEquals("Время изменения", header.get(6).text());
 
         assertRow(posts.get(0), rows.get(1));
         assertRow(posts.get(1), rows.get(2));
@@ -109,7 +110,7 @@ public class ModerationControllerTest extends JspEndpointTest {
 
     private static void assertRow(UnmoderatedPost expectedData, Element actualData) {
         Elements cells = actualData.getElementsByTag("td");
-        assertEquals(6, cells.size());
+        assertEquals(7, cells.size());
         assertEquals(expectedData.getId().map(String::valueOf).orElse(null), cells.get(0).text());
         assertEquals(Channel.MEMES.getName(), cells.get(1).text());
         assertEquals(expectedData.getTitle().orElse(null), cells.get(2).text());
@@ -125,5 +126,7 @@ public class ModerationControllerTest extends JspEndpointTest {
 
         assertEquals(ModerationController.viewTimeFormatter.format(expectedData.getCreatedDt().get()),
                 cells.get(5).text());
+        assertEquals(ModerationController.viewTimeFormatter.format(expectedData.getChangedDt().get()),
+                cells.get(6).text());
     }
 }

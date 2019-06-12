@@ -66,7 +66,5 @@ class PostFormValidator {
         public String getDescription() {
             return description;
         }
-
-
     }
 }
