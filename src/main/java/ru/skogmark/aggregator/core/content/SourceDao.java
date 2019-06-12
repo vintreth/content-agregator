@@ -21,42 +21,6 @@ class SourceDao {
         this.jdbcTemplate = requireNonNull(jdbcTemplate, "jdbcTemplate");
     }
 
-    void insertAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
-        requireNonNull(authorizationMeta, "authorizationMeta");
-        log.info("insertAuthorizationMeta(): authorizationMeta={}", authorizationMeta);
-        jdbcTemplate.update("insert into authorization_meta (source_id, authorization_token) values " +
-                        "(:sourceId, :authorizationToken)",
-                new MapSqlParameterSource()
-                        .addValue("sourceId", authorizationMeta.getSourceId())
-                        .addValue("authorizationToken", authorizationMeta.getAuthorizationToken()));
-        log.info("AuthorizationMeta inserted: authorizationMeta={}", authorizationMeta);
-    }
-
-    Optional<AuthorizationMeta> getAuthorizationMeta(int sourceId) {
-        log.info("getAuthorizationMeta(): sourceId={}", sourceId);
-        AuthorizationMeta authorizationMeta = jdbcTemplate.queryForObject(
-                "select source_id, authorization_token from authorization_meta where source_id = :sourceId",
-                new MapSqlParameterSource()
-                        .addValue("sourceId", sourceId),
-                (ps, rowNum) -> {
-                    int storedSourceId = ps.getInt("source_id");
-                    return AuthorizationMeta.of(storedSourceId, ps.getString("authorization_token"));
-                });
-        log.info("AuthorizationMeta obtained: sourceId={}, authorizationMeta={}", sourceId, authorizationMeta);
-        return Optional.ofNullable(authorizationMeta);
-    }
-
-    void updateAuthorizationMeta(@Nonnull AuthorizationMeta authorizationMeta) {
-        log.info("updateAuthorizationMeta(): authorizationMeta={}", authorizationMeta);
-        int affectedRows = jdbcTemplate.update(
-                "update authorization_meta set authorization_token = :authorizationToken " +
-                        "where source_id = :sourceId",
-                new MapSqlParameterSource()
-                        .addValue("authorizationToken", authorizationMeta.getAuthorizationToken())
-                        .addValue("sourceId", authorizationMeta.getSourceId()));
-        log.info("AuthorizationMeta updated: affectedRows={}, authorizationMeta={}", affectedRows, authorizationMeta);
-    }
-
     Optional<Long> getOffset(int sourceId) {
         log.info("getOffset(): sourceId={}", sourceId);
         Long offset = jdbcTemplate.queryForObject(

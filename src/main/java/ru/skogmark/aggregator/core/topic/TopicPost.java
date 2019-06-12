@@ -49,6 +49,17 @@ public class TopicPost {
                 '}';
     }
 
+    public Builder copy() {
+        return builder()
+                .setId(id)
+                .setChannelId(channelId)
+                .setTitle(title)
+                .setText(text)
+                .setImages(images)
+                .setPublishedDt(publishedDt)
+                .setActive(active);
+    }
+
     @Nonnull
     public Optional<Long> getId() {
         return Optional.ofNullable(id);

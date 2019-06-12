@@ -21,6 +21,7 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                 UnmoderatedPost.builder()
                         .setId(1L)
                         .setChannelId(1)
+                        .setTitle("Title 1")
                         .setText("Text of the first post")
                         .setImages(List.of(
                                 PostImage.builder()

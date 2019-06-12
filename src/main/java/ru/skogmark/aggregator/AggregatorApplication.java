@@ -3,7 +3,6 @@ package ru.skogmark.aggregator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.google.common.collect.Sets;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,12 +17,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.skogmark.aggregator.prop.AggregatorProperties;
 import ru.skogmark.aggregator.prop.DataSourceProperties;
-import ru.skogmark.common.config.ConfigurationLoader;
-import ru.skogmark.common.config.Configurations;
 import ru.skogmark.common.migration.MigrationService;
 import ru.skogmark.framework.request.OutgoingRequestService;
 
 import javax.sql.DataSource;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -72,15 +70,9 @@ public class AggregatorApplication {
                                       @Qualifier("postgresNamedParameterJdbcTemplate") NamedParameterJdbcTemplate
                                               namedParameterJdbcTemplate) {
         return new MigrationService(transactionTemplate, namedParameterJdbcTemplate,
-                Sets.newHashSet(
-                        "premoderation_queue.table.sql",
+                Set.of("premoderation_queue.table.sql",
                         "source_offset.table.sql",
-                        "authorization_meta.table.sql"));
-    }
-
-    @Bean
-    ConfigurationLoader configurationLoader() {
-        return Configurations.newXmlConfigurationLoader();
+                        "topic.table.sql"));
     }
 
     @Bean

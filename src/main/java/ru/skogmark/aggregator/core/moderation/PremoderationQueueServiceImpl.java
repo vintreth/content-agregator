@@ -63,6 +63,7 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
         return transactionTemplate.execute(status -> premoderationQueueDao.updatePost(post));
     }
 
+    // todo test
     @Override
     public boolean publishPost(long id) {
         // todo move to async task
