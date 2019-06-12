@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 
 @Repository
 class PremoderationQueueDao {
-    private static final String FIELDS = "id, channel_id, title, text, images, created_dt";
+    private static final String FIELDS = "id, channel_id, title, text, images, created_dt, changed_dt";
 
     private static final Logger log = LoggerFactory.getLogger(PremoderationQueueDao.class);
 
@@ -72,5 +72,23 @@ class PremoderationQueueDao {
     long getPostsCount() {
         return jdbcTemplate.queryForObject("select count(id) from premoderation_queue",
                 Collections.emptyMap(), Long.class);
+    }
+
+    // todo test
+    boolean updatePost(@Nonnull UnmoderatedPost post) {
+        requireNonNull(post, "post");
+        return jdbcTemplate.update("update premoderation_queue set" +
+                        " channel_id = :channelId" +
+                        ", title = :title" +
+                        ", text = :text" +
+                        ", images = :images" +
+                        ", changed_dt = now()" +
+                        " where id = :id",
+                new MapSqlParameterSource()
+                        .addValue("channelId", post.getChannelId())
+                        .addValue("title", post.getTitle().orElse(null))
+                        .addValue("text", post.getText().orElse(null))
+                        .addValue("images", unmoderatedPostMapper.getSerializedValue(post.getImages()))
+                        .addValue("id", post.getId().get())) > 0;
     }
 }

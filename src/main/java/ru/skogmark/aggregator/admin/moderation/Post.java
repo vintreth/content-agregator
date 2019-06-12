@@ -15,6 +15,7 @@ public class Post {
     private final String text;
     private final List<Image> images;
     private final String createdDt;
+    private final String changedDt;
 
     private Post(@Nonnull Long id,
                  @Nonnull String channel,
@@ -22,7 +23,8 @@ public class Post {
                  @Nullable String title,
                  @Nullable String text,
                  @Nullable List<Image> images,
-                 @Nullable String createdDt) {
+                 @Nullable String createdDt,
+                 @Nullable String changedDt) {
         this.id = requireNonNull(id, "id");
         this.channel = requireNonNull(channel, "channel");
         this.channelId = requireNonNull(channelId, "channelId");
@@ -30,6 +32,7 @@ public class Post {
         this.text = text;
         this.images = images == null ? Collections.emptyList() : List.copyOf(images);
         this.createdDt = createdDt;
+        this.changedDt = changedDt;
     }
 
     @Override
@@ -42,6 +45,7 @@ public class Post {
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", createdDt='" + createdDt + '\'' +
+                ", changedDt='" + changedDt + '\'' +
                 '}';
     }
 
@@ -77,6 +81,10 @@ public class Post {
         return createdDt;
     }
 
+    public String getChangedDt() {
+        return changedDt;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -89,12 +97,13 @@ public class Post {
         private String text;
         private List<Image> images;
         private String createdDt;
+        private String changedDt;
 
         private Builder() {
         }
 
         public Post build() {
-            return new Post(id, channel, channelId, title, text, images, createdDt);
+            return new Post(id, channel, channelId, title, text, images, createdDt, changedDt);
         }
 
         public Builder setId(Long id) {
@@ -129,6 +138,11 @@ public class Post {
 
         public Builder setCreatedDt(String createdDt) {
             this.createdDt = createdDt;
+            return this;
+        }
+
+        public Builder setChangedDt(String changedDt) {
+            this.changedDt = changedDt;
             return this;
         }
     }

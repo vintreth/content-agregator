@@ -68,8 +68,8 @@ class SourceDao {
         return Optional.ofNullable(offset);
     }
 
-    boolean saveOffset(int sourceId, long offsetValue) {
-        log.info("saveOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
+    boolean updateOffset(int sourceId, long offsetValue) {
+        log.info("updateOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
         return jdbcTemplate.update(
                 "update source_offset set offset_value = :offsetValue where sourceId = :sourceId",
                 new MapSqlParameterSource()

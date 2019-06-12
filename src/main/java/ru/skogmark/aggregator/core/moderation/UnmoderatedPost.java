@@ -18,19 +18,22 @@ public class UnmoderatedPost {
     private final String text;
     private final List<PostImage> images;
     private final ZonedDateTime createdDt;
+    private final ZonedDateTime changedDt;
 
     private UnmoderatedPost(@Nullable Long id,
                             @Nonnull Integer channelId,
                             @Nullable String title,
                             @Nullable String text,
                             @Nullable List<PostImage> images,
-                            @Nullable ZonedDateTime createdDt) {
+                            @Nullable ZonedDateTime createdDt,
+                            @Nullable ZonedDateTime changedDt) {
         this.id = id;
         this.channelId = requireNonNull(channelId, "channelId");
         this.title = title;
         this.text = text;
         this.images = images == null ? Collections.emptyList() : Collections.unmodifiableList(images);
         this.createdDt = createdDt;
+        this.changedDt = changedDt;
     }
 
     @Nonnull
@@ -63,6 +66,11 @@ public class UnmoderatedPost {
         return Optional.ofNullable(createdDt);
     }
 
+    @Nonnull
+    public Optional<ZonedDateTime> getChangedDt() {
+        return Optional.ofNullable(changedDt);
+    }
+
     @Override
     public String toString() {
         return "UnmoderatedPost{" +
@@ -72,6 +80,7 @@ public class UnmoderatedPost {
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", createdDt=" + createdDt +
+                ", changedDt=" + changedDt +
                 '}';
     }
 
@@ -82,7 +91,8 @@ public class UnmoderatedPost {
                 .setTitle(title)
                 .setText(text)
                 .setImages(images)
-                .setCreatedDt(createdDt);
+                .setCreatedDt(createdDt)
+                .setChangedDt(changedDt);
     }
 
     public static Builder builder() {
@@ -96,6 +106,7 @@ public class UnmoderatedPost {
         private String text;
         private List<PostImage> images;
         private ZonedDateTime createdDt;
+        private ZonedDateTime changedDt;
 
         private Builder() {
         }
@@ -130,8 +141,13 @@ public class UnmoderatedPost {
             return this;
         }
 
+        public Builder setChangedDt(ZonedDateTime changedDt) {
+            this.changedDt = changedDt;
+            return this;
+        }
+
         public UnmoderatedPost build() {
-            return new UnmoderatedPost(id, channelId, title, text, images, createdDt);
+            return new UnmoderatedPost(id, channelId, title, text, images, createdDt, changedDt);
         }
     }
 }

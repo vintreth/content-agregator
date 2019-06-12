@@ -8,7 +8,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Ошибка сохранения формы</h4>
-                        <h6 class="card-subtitle">${errorDescription} - <code class="m-r-10">${errorName}</code></h6>
+                        <h6 class="card-subtitle">${errorDescription} - <code class="m-r-10">${errorCode}</code></h6>
                         <h6 class="card-subtitle"><a href="/admin/moderation/posts/${postId}/">Вернуться к посту</a></h6>
                     </div>
                 </div>

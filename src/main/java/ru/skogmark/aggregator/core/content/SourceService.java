@@ -22,7 +22,7 @@ public class SourceService {
         return sourceDao.getOffset(sourceId);
     }
 
-    public boolean saveOffset(int sourceId, long offsetValue) {
-        return transactionTemplate.execute(status -> sourceDao.saveOffset(sourceId, offsetValue));
+    public boolean updateOffset(int sourceId, long offsetValue) {
+        return transactionTemplate.execute(status -> sourceDao.updateOffset(sourceId, offsetValue));
     }
 }

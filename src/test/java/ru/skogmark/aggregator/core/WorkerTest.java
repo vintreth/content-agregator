@@ -109,6 +109,7 @@ public class WorkerTest {
         assertEquals(expectedPost.getImages().size(), actualPost.getImages().size());
         assertTrue(expectedPost.getImages().containsAll(actualPost.getImages()));
         assertFalse(actualPost.getCreatedDt().isPresent());
+        assertFalse(actualPost.getChangedDt().isPresent());
     }
 
     private static Parser createParser(Content content) {
@@ -125,7 +126,7 @@ public class WorkerTest {
                                        ArgumentCaptor<Long> offsetCaptor) {
         SourceService sourceService = mock(SourceService.class);
         when(sourceService.getOffset(1)).thenReturn(Optional.of(1000L));
-        doAnswer(invocation -> null).when(sourceService).saveOffset(sourceIdCaptor.capture(), offsetCaptor.capture());
+        doAnswer(invocation -> null).when(sourceService).updateOffset(sourceIdCaptor.capture(), offsetCaptor.capture());
 
         PremoderationQueueService premoderationQueueService = mock(PremoderationQueueServiceImpl.class);
         doAnswer(invocation -> null).when(premoderationQueueService).enqueuePosts(postsCaptor.capture());

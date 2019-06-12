@@ -43,6 +43,7 @@ public class ModerationControllerTest extends JspEndpointTest {
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(2L)
@@ -61,6 +62,7 @@ public class ModerationControllerTest extends JspEndpointTest {
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(3L)
@@ -79,6 +81,7 @@ public class ModerationControllerTest extends JspEndpointTest {
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build());
         premoderationQueueServiceStub.setPosts(posts);
 

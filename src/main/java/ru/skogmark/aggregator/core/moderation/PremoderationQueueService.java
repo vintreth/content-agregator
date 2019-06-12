@@ -13,5 +13,7 @@ public interface PremoderationQueueService {
 
     void enqueuePosts(@Nonnull List<UnmoderatedPost> posts);
 
-    boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost);
+    boolean updatePost(@Nonnull UnmoderatedPost post);
+
+    boolean publishPost(long id);
 }

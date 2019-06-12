@@ -42,7 +42,7 @@ class PostFormValidator {
         return Optional.empty();
     }
 
-    enum ValidationError {
+    enum ValidationError implements ErrorCode {
         INVALID_PUBLISH_VALUE("Некорректное значение поля 'Опубликовать'"),
         MAX_TITLE_LENGTH_EXCEEDED("Превышено максимальное значение поля 'Заголовок'"),
         MAX_TEXT_LENGTH_EXCEEDED("Превышено максимальное значение поля 'Текст'"),
@@ -57,8 +57,16 @@ class PostFormValidator {
             this.description = description;
         }
 
-        String getDescription() {
+        @Override
+        public String getCode() {
+            return name();
+        }
+
+        @Override
+        public String getDescription() {
             return description;
         }
+
+
     }
 }

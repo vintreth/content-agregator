@@ -34,6 +34,9 @@ class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
                 .setText(rs.getString("text"))
                 .setImages(getDeserializedValue(rs.getString("images")))
                 .setCreatedDt(DateUtils.toZonedDateTime(rs.getDate("created_dt")))
+                .setChangedDt(rs.getDate("changed_dt") != null
+                        ? DateUtils.toZonedDateTime(rs.getDate("changed_dt"))
+                        : null)
                 .build();
     }
 

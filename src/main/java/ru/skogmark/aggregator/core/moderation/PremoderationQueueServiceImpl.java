@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.skogmark.aggregator.core.topic.TopicPost;
+import ru.skogmark.aggregator.core.topic.TopicService;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,11 +22,14 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
 
     private final TransactionTemplate transactionTemplate;
     private final PremoderationQueueDao premoderationQueueDao;
+    private final TopicService topicService;
 
     public PremoderationQueueServiceImpl(@Nonnull TransactionTemplate transactionTemplate,
-                                         @Nonnull PremoderationQueueDao premoderationQueueDao) {
+                                         @Nonnull PremoderationQueueDao premoderationQueueDao,
+                                         @Nonnull TopicService topicService) {
         this.transactionTemplate = requireNonNull(transactionTemplate, "transactionTemplate");
         this.premoderationQueueDao = requireNonNull(premoderationQueueDao, "premoderationQueueDao");
+        this.topicService = requireNonNull(topicService, "topicService");
     }
 
     @Override
@@ -54,7 +59,42 @@ public class PremoderationQueueServiceImpl implements PremoderationQueueService 
     }
 
     @Override
-    public boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost) {
-        return false;
+    public boolean updatePost(@Nonnull UnmoderatedPost post) {
+        return transactionTemplate.execute(status -> premoderationQueueDao.updatePost(post));
+    }
+
+    @Override
+    public boolean publishPost(long id) {
+        // todo move to async task
+        log.info("publishPost(): id={}", id);
+        Optional<UnmoderatedPost> unmoderatedPost = getPost(id);
+        if (unmoderatedPost.isEmpty()) {
+            log.error("Post not found: id={}", id);
+            return false;
+        }
+        TopicPost publishedPost = transactionTemplate.execute(status -> {
+            TopicPost topicPost = topicService.addPost(toTopicPost(unmoderatedPost.get()));
+            if (!deletePost(id)) {
+                log.error("Unable to delete unmoderatedPost: id={}", id);
+                // todo return
+            }
+            return topicPost;
+        });
+        // todo impl
+        return true;
+    }
+
+    private boolean deletePost(long id) {
+        return false; // todo
+    }
+
+    private static TopicPost toTopicPost(UnmoderatedPost unmoderatedPost) {
+        return TopicPost.builder()
+                .setChannelId(unmoderatedPost.getChannelId())
+                .setTitle(unmoderatedPost.getTitle().orElse(null))
+                .setText(unmoderatedPost.getText().orElse(null))
+                .setImages(unmoderatedPost.getImages())
+                .setActive(true)
+                .build();
     }
 }

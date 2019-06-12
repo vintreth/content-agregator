@@ -34,6 +34,7 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(2L)
@@ -51,6 +52,7 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build(),
                 UnmoderatedPost.builder()
                         .setId(3L)
@@ -68,6 +70,7 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                                         .setHeight(768)
                                         .build()))
                         .setCreatedDt(now)
+                        .setChangedDt(now)
                         .build());
     }
 
@@ -78,6 +81,7 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
 
     @Override
     public Optional<UnmoderatedPost> getPost(long id) {
+        ZonedDateTime now = ZonedDateTime.now();
         return Optional.of(UnmoderatedPost.builder()
                 .setId(1L)
                 .setChannelId(1)
@@ -103,7 +107,8 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
                                 .setWidth(807)
                                 .setHeight(605)
                                 .build()))
-                .setCreatedDt(ZonedDateTime.now())
+                .setCreatedDt(now)
+                .setChangedDt(now)
                 .build());
     }
 
@@ -113,7 +118,12 @@ public class PremoderationQueueServiceStub1 implements PremoderationQueueService
     }
 
     @Override
-    public boolean updatePost(@Nonnull UnmoderatedPost unmoderatedPost) {
+    public boolean updatePost(@Nonnull UnmoderatedPost post) {
+        return false;
+    }
+
+    @Override
+    public boolean publishPost(long id) {
         return false;
     }
 }

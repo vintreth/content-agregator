@@ -83,46 +83,30 @@ public class ModerationController {
     @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
         log.info("savePost(): id={}, form={}", id, form);
+        Optional<UnmoderatedPost> existedPost = premoderationQueueService.getPost(id);
+        if (existedPost.isEmpty()) {
+            log.error("Post does not exist: postId={}", id);
+            return error(Error.POST_NOT_FOUND, id, model);
+        }
+
         PostForm postForm = new PostForm(form);
         Optional<PostFormValidator.ValidationError> validationError = postFormValidator.validateForm(postForm);
         if (validationError.isPresent()) {
             log.error("Form data is invalid: validationError={}", validationError.get());
-            model.addAttribute("postId", id);
-            model.addAttribute("errorDescription", validationError.get().getDescription());
-            model.addAttribute("errorName", validationError.get().name());
-            return VIEW_MODERATION_POST_SAVE_ERROR;
+            return error(validationError.get(), id, model);
         }
 
-        Optional<UnmoderatedPost> existedPost = premoderationQueueService.getPost(id);
-        if (existedPost.isEmpty()) {
-            log.error("Post does not exist: postId={}", id);
-            model.addAttribute("postId", id);
-            model.addAttribute("errorDescription", "Поста по заданному идентификатору не существует");
-            model.addAttribute("errorName", "POST_NOT_FOUND");
-            return VIEW_MODERATION_POST_SAVE_ERROR;
-        }
-
-        UnmoderatedPost postToUpdate = existedPost.get().copy()
-                .setChannelId(Integer.parseInt(postForm.getChannelId()))
-                .setTitle(postForm.getTitle())
-                .setText(postForm.getText())
-                .setImages(postForm.getImage() != null
-                        ? Collections.singletonList(
-                        existedPost.get().getImages().get(Integer.parseInt(postForm.getImage())))
-                        : null)
-                .build();
+        UnmoderatedPost postToUpdate = toUnmoderatedPost(existedPost.get(), postForm);
         if (!premoderationQueueService.updatePost(postToUpdate)) {
             log.error("Update failed: post={}", postToUpdate);
-            model.addAttribute("postId", id);
-            model.addAttribute("errorDescription", "Не удалось обновить данные поста");
-            model.addAttribute("errorName", "UPDATE_FAILED");
-            return VIEW_MODERATION_POST_SAVE_ERROR;
+            return error(Error.UPDATE_FAILED, id, model);
         }
-
         if (postForm.isPublish()) {
-            // todo publish
+            if (!premoderationQueueService.publishPost(id)) {
+                log.error("Publish failed: postId={}", id);
+                return error(Error.PUBLISH_FAILED, id, model);
+            }
         }
-
         return VIEW_MODERATION_POST_SAVED;
     }
 
@@ -137,8 +121,8 @@ public class ModerationController {
                 .setImages(unmoderatedPost.getImages().stream()
                         .map(ModerationController::toImage)
                         .collect(Collectors.toList()))
-                .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format)
-                        .orElse(null))
+                .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format).orElse(null))
+                .setChangedDt(unmoderatedPost.getChangedDt().map(viewTimeFormatter::format).orElse(null))
                 .build();
     }
 
@@ -150,5 +134,45 @@ public class ModerationController {
             title += " [" + postImage.getWidth().get() + 'x' + postImage.getHeight().get() + ']';
         }
         return new Image(postImage.getSrc(), title);
+    }
+
+    private static UnmoderatedPost toUnmoderatedPost(UnmoderatedPost existedPost, PostForm postForm) {
+        return existedPost.copy()
+                .setChannelId(Integer.parseInt(postForm.getChannelId()))
+                .setTitle(postForm.getTitle())
+                .setText(postForm.getText())
+                .setImages(postForm.getImage() != null
+                        ? Collections.singletonList(existedPost.getImages().get(Integer.parseInt(postForm.getImage())))
+                        : null)
+                .build();
+    }
+
+    private static String error(ErrorCode errorCode, long postId, Model model) {
+        model.addAttribute("postId", postId);
+        model.addAttribute("errorCode", errorCode.getCode());
+        model.addAttribute("errorDescription", errorCode.getDescription());
+        return VIEW_MODERATION_POST_SAVE_ERROR;
+    }
+
+    private enum Error implements ErrorCode {
+        POST_NOT_FOUND("Поста по заданному идентификатору не существует"),
+        UPDATE_FAILED("Не удалось обновить данные поста"),
+        PUBLISH_FAILED("Не удалось опубликовать пост");
+
+        private final String description;
+
+        Error(String description) {
+            this.description = description;
+        }
+
+        @Override
+        public String getCode() {
+            return name();
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 }
