@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -27,15 +28,17 @@ class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
 
     @Override
     public UnmoderatedPost mapRow(ResultSet rs, int rowNum) throws SQLException {
+        String images = rs.getString("images");
+        Timestamp changedDt = rs.getTimestamp("changed_dt");
         return UnmoderatedPost.builder()
                 .setId(rs.getLong("id"))
                 .setChannelId(rs.getInt("channel_id"))
                 .setTitle(rs.getString("title"))
                 .setText(rs.getString("text"))
-                .setImages(getDeserializedValue(rs.getString("images")))
-                .setCreatedDt(DateUtils.toZonedDateTime(rs.getDate("created_dt")))
-                .setChangedDt(rs.getDate("changed_dt") != null
-                        ? DateUtils.toZonedDateTime(rs.getDate("changed_dt"))
+                .setImages(images != null ? getDeserializedValue(images) : null)
+                .setCreatedDt(DateUtils.toZonedDateTime(rs.getTimestamp("created_dt")))
+                .setChangedDt(changedDt != null
+                        ? DateUtils.toZonedDateTime(changedDt)
                         : null)
                 .build();
     }
@@ -52,7 +55,7 @@ class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
         }
     }
 
-    private List<PostImage> getDeserializedValue(String images) {
+    List<PostImage> getDeserializedValue(String images) {
         try {
             ImagesWrapper wrapper = objectMapper.readValue(images, ImagesWrapper.class);
             return wrapper.getImages();
@@ -61,7 +64,7 @@ class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
         }
     }
 
-    private final class ImagesWrapper {
+    private static class ImagesWrapper {
         private final List<PostImage> images;
 
         @JsonCreator

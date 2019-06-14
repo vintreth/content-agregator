@@ -48,13 +48,13 @@ class PremoderationQueueDao {
     // todo test
     Optional<UnmoderatedPost> getPost(long id) {
         log.info("getPost(): id={}", id);
-        UnmoderatedPost post = jdbcTemplate.queryForObject(
+        Optional<UnmoderatedPost> post = jdbcTemplate.query(
                 "select " + FIELDS + " from premoderation_queue where id = :id",
                 new MapSqlParameterSource()
                         .addValue("id", id),
-                unmoderatedPostMapper);
+                unmoderatedPostMapper).stream().findFirst();
         log.info("Post obtained: post={}", post);
-        return Optional.ofNullable(post);
+        return post;
     }
 
     List<UnmoderatedPost> getPosts(int limit, long offset) {

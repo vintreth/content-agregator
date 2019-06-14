@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 @Component
-class Worker implements InitializingBean {
+public class Worker implements InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(Worker.class);
 
     private final ScheduledExecutorService workerExecutor;
@@ -75,7 +75,7 @@ class Worker implements InitializingBean {
                         startingTime.getHour() == time.getHour() && startingTime.getMinute() == time.getMinute());
     }
 
-    private void parseContent(SourceContext sourceContext, int channelId) {
+    public void parseContent(SourceContext sourceContext, int channelId) {
         log.info("parseContent(): sourceId={}", sourceContext.getSourceId());
         Long offset = sourceService.getOffset(sourceContext.getSourceId()).orElse(null);
         sourceContext.getParser().parse(ParsingContext.builder()

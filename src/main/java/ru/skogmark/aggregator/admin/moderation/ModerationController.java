@@ -48,8 +48,8 @@ public class ModerationController {
     }
 
     @GetMapping("/posts/page/{page}/")
-    public String getPosts(Model model, @PathVariable("page") int page) {
-        log.info("getPosts(): page={}", page);
+    public String posts(Model model, @PathVariable("page") int page) {
+        log.info("posts(): page={}", page);
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
         List<Post> viewPosts = premoderationQueueService.getPosts(offsetInfo.getLimit(), offsetInfo.getOffset())
@@ -65,8 +65,8 @@ public class ModerationController {
 
     //todo test
     @GetMapping("/posts/{id}/")
-    public String getPost(Model model, @PathVariable("id") long id) {
-        log.info("getPost(): id={}", id);
+    public String post(Model model, @PathVariable("id") long id) {
+        log.info("post(): id={}", id);
         Optional<UnmoderatedPost> unmoderatedPost = premoderationQueueService.getPost(id);
         if (unmoderatedPost.isEmpty()) {
             log.error("Post not found: id={}", id);
@@ -83,8 +83,8 @@ public class ModerationController {
 
     // todo test
     @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
-        log.info("savePost(): id={}, form={}", id, form);
+    public String post(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
+        log.info("post(): id={}, form={}", id, form);
         Optional<UnmoderatedPost> existedPost = premoderationQueueService.getPost(id);
         if (existedPost.isEmpty()) {
             log.error("Post does not exist: postId={}", id);

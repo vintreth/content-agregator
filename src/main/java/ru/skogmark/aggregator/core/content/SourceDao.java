@@ -23,19 +23,19 @@ class SourceDao {
 
     Optional<Long> getOffset(int sourceId) {
         log.info("getOffset(): sourceId={}", sourceId);
-        Long offset = jdbcTemplate.queryForObject(
+        Optional<Long> offset = jdbcTemplate.queryForList(
                 "select offset_value from source_offset where source_id = :sourceId",
                 new MapSqlParameterSource()
                         .addValue("sourceId", sourceId),
-                Long.class);
+                Long.class).stream().findFirst();
         log.info("Offset obtained: sourceId={}, offset={}", sourceId, offset);
-        return Optional.ofNullable(offset);
+        return offset;
     }
 
     boolean updateOffset(int sourceId, long offsetValue) {
         log.info("updateOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
         return jdbcTemplate.update(
-                "update source_offset set offset_value = :offsetValue where sourceId = :sourceId",
+                "update source_offset set offset_value = :offsetValue where source_id = :sourceId",
                 new MapSqlParameterSource()
                         .addValue("sourceId", sourceId)
                         .addValue("offsetValue", offsetValue)) > 0;
