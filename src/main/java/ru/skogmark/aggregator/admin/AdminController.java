@@ -43,28 +43,28 @@ public class AdminController {
     }
 
     @GetMapping("/")
-    public String index() {
-        log.info("index()");
+    public String getIndex() {
+        log.info("getIndex()");
         return VIEW_ADMIN_INDEX;
     }
 
     @GetMapping("/error404/")
-    public String error404() {
-        log.info("error404()");
+    public String getError404() {
+        log.info("getError404()");
         return VIEW_ADMIN_ERROR_404;
     }
 
     @GetMapping("/download/")
-    public String download(Model model) {
-        log.info("download()");
+    public String showDownload(Model model) {
+        log.info("showDownload()");
         model.addAttribute("sources", List.of(Source.values()));
         model.addAttribute("channels", List.of(Channel.values()));
         return VIEW_ADMIN_DOWNLOAD;
     }
 
     @PostMapping(value = "/download/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String download(@RequestParam Map<String, String> form) {
-        log.info("download(): form={}", form);
+    public String runDownload(@RequestParam Map<String, String> form) {
+        log.info("runDownload(): form={}", form);
         DownloadForm downloadForm = new DownloadForm(form);
         // todo validate form
         int sourceId = Integer.parseInt(downloadForm.getSourceId());

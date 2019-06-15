@@ -41,6 +41,7 @@ class VkApiClient {
         requireNonNull(onResultReceivedCallback, "onResultReceivedCallback");
         outgoingRequestService.execute(
                 HttpHost.create(vkParserProperties.getApiUrl()),
+                // todo wrap concat with builder
                 new HttpGet("/method/wall.get?" + new QueryStringBuilder()
                         .put("owner_id", request.getOwner().getId())
                         .put("count", request.getCount())

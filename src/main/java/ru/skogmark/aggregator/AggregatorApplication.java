@@ -90,12 +90,12 @@ public class AggregatorApplication {
     }
 
     @Bean
-    HttpClient httpClient() {
+    HttpClient httpClient(AggregatorProperties properties) {
         // todo client settings
         return HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(500)
-                        .setSocketTimeout(500)
+                        .setConnectTimeout(properties.getHttpClient().getConnectionTimeout())
+                        .setSocketTimeout(properties.getHttpClient().getSocketTimeout())
                         .build())
                 .build();
     }

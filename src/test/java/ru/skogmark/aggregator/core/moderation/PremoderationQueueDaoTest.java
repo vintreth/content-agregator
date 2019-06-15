@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.skogmark.aggregator.ApplicationContextAwareTest;
 import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSize;
 
 import java.util.List;
 
@@ -28,16 +29,18 @@ public class PremoderationQueueDaoTest extends ApplicationContextAwareTest {
                 .setTitle("title")
                 .setText("test text of post with some info")
                 .setImages(List.of(
-                        PostImage.builder()
+                        new PostImage(List.of(PostImageSize.builder()
+                                .setUuid("2dfc221f-4694-4535-9052-e7584348fa29")
                                 .setSrc("img4")
                                 .setWidth(640)
                                 .setHeight(480)
-                                .build(),
-                        PostImage.builder()
+                                .build())),
+                        new PostImage(List.of(PostImageSize.builder()
+                                .setUuid("1366db77-5972-454d-a853-ba21033da20d")
                                 .setSrc("img5")
                                 .setWidth(1024)
                                 .setHeight(768)
-                                .build()))
+                                .build()))))
                 .build();
 
         dao.insertPost(post);
@@ -48,7 +51,7 @@ public class PremoderationQueueDaoTest extends ApplicationContextAwareTest {
         assertEquals(453453, captor.getValue().getValue("channelId"));
         assertEquals("title", captor.getValue().getValue("title"));
         assertEquals("test text of post with some info", captor.getValue().getValue("text"));
-        assertEquals("{\"images\":[{\"src\":\"img4\",\"width\":640,\"height\":480},{\"src\":\"img5\",\"width\":1024,\"height\":768}]}",
+        assertEquals("{\"images\":[{\"sizes\":[{\"uuid\":\"2dfc221f-4694-4535-9052-e7584348fa29\",\"src\":\"img4\",\"width\":640,\"height\":480}]},{\"sizes\":[{\"uuid\":\"1366db77-5972-454d-a853-ba21033da20d\",\"src\":\"img5\",\"width\":1024,\"height\":768}]}]}",
                 captor.getValue().getValue("images"));
     }
 }

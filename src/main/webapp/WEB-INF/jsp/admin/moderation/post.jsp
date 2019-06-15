@@ -26,16 +26,22 @@
                                 <label>Текст поста</label>
                                 <textarea name="text" class="form-control" rows="5">${post.text}</textarea>
                             </div>
-                            <div class="form-group row p-t-20">
-                                <div class="col-sm-4">
-                                    <c:forEach items="${post.images}" var="image" varStatus="counter">
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="image-${counter.count}" name="image" value="${counter.count}" class="custom-control-input">
-                                            <label class="custom-control-label" for="image-${counter.count}">${image.title}</label>
-                                            <a href="${image.src}"><img src="${image.src}" alt="${image.title}" width="240"/></a>
-                                        </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <c:forEach items="${post.images}" var="image">
+                                        <tr>
+                                            <c:forEach items="${image.sizes}" var="size">
+                                                <td>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="size-${size.uuid}" name="${size.uuid}" value="imageSize">
+                                                        <label class="custom-control-label" for="size-${size.uuid}">${size.title}</label>
+                                                        <a href="${size.src}"><img src="${size.src}" alt="${size.title}" width="200"/></a>
+                                                    </div>
+                                                </td>
+                                            </c:forEach>
+                                        </tr>
                                     </c:forEach>
-                                </div>
+                                </table>
                             </div>
                             <div class="form-group">
                                 <label>Канал</label>

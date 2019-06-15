@@ -19,16 +19,8 @@ class PostFormValidator {
         if (form.getText() != null && form.getText().length() > MAX_TEXT_LENGTH) {
             return Optional.of(ValidationError.MAX_TEXT_LENGTH_EXCEEDED);
         }
-        if ((form.getText() == null || form.getText().isBlank())
-                && (form.getImage() == null || form.getImage().isBlank())) {
+        if ((form.getText() == null || form.getText().isBlank()) && (form.getImageSizes().isEmpty())) {
             return Optional.of(ValidationError.EITHER_TEXT_OR_IMAGE_MUST_BE_SET);
-        }
-        if (form.getImage() != null) {
-            try {
-                Integer.parseInt(form.getImage());
-            } catch (NumberFormatException e) {
-                return Optional.of(ValidationError.IMAGE_IS_NOT_A_NUMBER);
-            }
         }
         if (form.getChannelId() == null) {
             return Optional.of(ValidationError.CHANNEL_ID_MUST_BE_SET);
@@ -47,7 +39,6 @@ class PostFormValidator {
         MAX_TITLE_LENGTH_EXCEEDED("Превышено максимальное значение поля 'Заголовок'"),
         MAX_TEXT_LENGTH_EXCEEDED("Превышено максимальное значение поля 'Текст'"),
         EITHER_TEXT_OR_IMAGE_MUST_BE_SET("Должны быть заданы значения для полей 'Текст' либо 'Изображение'"),
-        IMAGE_IS_NOT_A_NUMBER("Поле 'Изображение' не является числом"),
         CHANNEL_ID_MUST_BE_SET("Должно быть задано поле 'Канал'"),
         CHANNEL_ID_IS_NOT_A_NUMBER("Поле 'Канал' не является числом");
 

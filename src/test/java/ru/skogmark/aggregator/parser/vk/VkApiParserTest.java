@@ -1,6 +1,8 @@
 package ru.skogmark.aggregator.parser.vk;
 
 import org.junit.Test;
+import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSize;
 import ru.skogmark.aggregator.core.content.ContentPost;
 import ru.skogmark.aggregator.core.content.ParsingContext;
 
@@ -89,27 +91,38 @@ public class VkApiParserTest {
     private static void assertItem(Item expectedItem, ContentPost actualItem) {
         assertEquals(expectedItem.getId(), actualItem.getExternalId());
         assertEquals(expectedItem.getText().orElse(null), actualItem.getText().orElse(null));
-        assertEquals(expectedItem.getAttachments().get(0).getPhoto().get().getSizes().size(),
-                actualItem.getImages().size());
-        assertEquals(
-                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(0).getUrl(),
-                actualItem.getImages().get(0).getSrc());
-        assertEquals(
-                expectedItem.getAttachments().get(0).getPhoto().get().getSizes().get(1).getUrl(),
-                actualItem.getImages().get(1).getSrc());
+        assertImage(expectedItem.getAttachments().get(0).getPhoto().get(), actualItem.getImages().get(0));
+        assertImage(expectedItem.getAttachments().get(1).getPhoto().get(), actualItem.getImages().get(1));
+    }
+
+    private static void assertImage(Photo expectedImage, PostImage actualImage) {
+        assertSize(expectedImage.getSizes().get(0), actualImage.getSizes().get(0));
+        assertSize(expectedImage.getSizes().get(1), actualImage.getSizes().get(1));
+    }
+
+    private static void assertSize(Size expectedSize, PostImageSize actualSize) {
+        assertEquals(expectedSize.getUrl(), actualSize.getSrc());
+        assertEquals(expectedSize.getWidth(), actualSize.getWidth().orElse(null));
+        assertEquals(expectedSize.getHeight(), actualSize.getHeight().orElse(null));
     }
 
     private VkApiResult createResult() {
         return new VkApiResult(new Response(45500, List.of(
                 new Item(24L, "text of item0", List.of(
                         new Attachment("photo", new Photo(List.of(
+                                new Size("m", "https://vk.com/size3m", 320, 320),
+                                new Size("l", "https://vk.com/size3l", 512, 512)))),
+                        new Attachment("photo", new Photo(List.of(
                                 new Size("m", "https://vk.com/size0m", 640, 480),
                                 new Size("l", "https://vk.com/size0l", 1024, 768)))))),
                 new Item(25L, "text of item1", List.of(
                         new Attachment("photo", new Photo(List.of(
                                 new Size("m", "https://vk.com/size1m", 640, 480),
-                                new Size("l", "https://vk.com/size1l", 1024, 768))))))
-        )), null);
+                                new Size("l", "https://vk.com/size1l", 1024, 768)))),
+                        new Attachment("photo", new Photo(List.of(
+                                new Size("m", "https://vk.com/size2m", 320, 240),
+                                new Size("l", "https://vk.com/size2l", 512, 256)))))))),
+                null);
     }
 
     private VkApiParser createParser(VkApiResult result) {

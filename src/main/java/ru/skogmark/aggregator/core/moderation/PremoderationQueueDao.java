@@ -60,7 +60,7 @@ class PremoderationQueueDao {
     List<UnmoderatedPost> getPosts(int limit, long offset) {
         log.info("getPosts(): limit={}, offset={}", limit, offset);
         List<UnmoderatedPost> unmoderatedPosts = jdbcTemplate.query(
-                "select " + FIELDS + " from premoderation_queue limit :limit offset :offset",
+                "select " + FIELDS + " from premoderation_queue order by id limit :limit offset :offset",
                 new MapSqlParameterSource()
                         .addValue("limit", limit)
                         .addValue("offset", offset),

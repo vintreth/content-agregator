@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.skogmark.aggregator.JspEndpointTest;
 import ru.skogmark.aggregator.channel.Channel;
 import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSize;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueServiceStub;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,16 +34,18 @@ public class ModerationControllerTest extends JspEndpointTest {
                         .setTitle("Title #1")
                         .setText("Text of the first post")
                         .setImages(List.of(
-                                PostImage.builder()
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img0")
                                         .setWidth(640)
                                         .setHeight(480)
-                                        .build(),
-                                PostImage.builder()
+                                        .build())),
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img1")
                                         .setWidth(1024)
                                         .setHeight(768)
-                                        .build()))
+                                        .build()))))
                         .setCreatedDt(now)
                         .setChangedDt(now)
                         .build(),
@@ -51,16 +55,18 @@ public class ModerationControllerTest extends JspEndpointTest {
                         .setTitle("Title #2")
                         .setText("Text of the second post")
                         .setImages(List.of(
-                                PostImage.builder()
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img2")
                                         .setWidth(640)
                                         .setHeight(480)
-                                        .build(),
-                                PostImage.builder()
+                                        .build())),
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img3")
                                         .setWidth(1024)
                                         .setHeight(768)
-                                        .build()))
+                                        .build()))))
                         .setCreatedDt(now)
                         .setChangedDt(now)
                         .build(),
@@ -70,16 +76,18 @@ public class ModerationControllerTest extends JspEndpointTest {
                         .setTitle("Title #3")
                         .setText("Text of the third post")
                         .setImages(List.of(
-                                PostImage.builder()
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img4")
                                         .setWidth(640)
                                         .setHeight(480)
-                                        .build(),
-                                PostImage.builder()
+                                        .build())),
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img5")
                                         .setWidth(1024)
                                         .setHeight(768)
-                                        .build()))
+                                        .build()))))
                         .setCreatedDt(now)
                         .setChangedDt(now)
                         .build());

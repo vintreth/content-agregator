@@ -10,12 +10,14 @@ import ru.skogmark.aggregator.admin.AdminController;
 import ru.skogmark.aggregator.admin.Paginator;
 import ru.skogmark.aggregator.channel.Channel;
 import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSize;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 
 import javax.annotation.Nonnull;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -48,8 +50,8 @@ public class ModerationController {
     }
 
     @GetMapping("/posts/page/{page}/")
-    public String posts(Model model, @PathVariable("page") int page) {
-        log.info("posts(): page={}", page);
+    public String getPosts(Model model, @PathVariable("page") int page) {
+        log.info("getPosts(): page={}", page);
         Paginator paginator = new Paginator(page, DEFAULT_ON_PAGE_COUNT, premoderationQueueService.getPostsCount());
         Paginator.OffsetInfo offsetInfo = paginator.getOffsetInfo();
         List<Post> viewPosts = premoderationQueueService.getPosts(offsetInfo.getLimit(), offsetInfo.getOffset())
@@ -65,12 +67,12 @@ public class ModerationController {
 
     //todo test
     @GetMapping("/posts/{id}/")
-    public String post(Model model, @PathVariable("id") long id) {
-        log.info("post(): id={}", id);
+    public String getPost(Model model, @PathVariable("id") long id) {
+        log.info("getPost(): id={}", id);
         Optional<UnmoderatedPost> unmoderatedPost = premoderationQueueService.getPost(id);
         if (unmoderatedPost.isEmpty()) {
             log.error("Post not found: id={}", id);
-            return adminController.error404();
+            return adminController.getError404();
         }
 
         Post post = toPost(unmoderatedPost.get());
@@ -83,8 +85,8 @@ public class ModerationController {
 
     // todo test
     @PostMapping(value = "/posts/{id}/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String post(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
-        log.info("post(): id={}, form={}", id, form);
+    public String savePost(Model model, @PathVariable("id") long id, @RequestParam Map<String, String> form) {
+        log.info("savePost(): id={}, form={}", id, form);
         Optional<UnmoderatedPost> existedPost = premoderationQueueService.getPost(id);
         if (existedPost.isEmpty()) {
             log.error("Post does not exist: postId={}", id);
@@ -131,7 +133,9 @@ public class ModerationController {
                         .orElse(null))
                 .setText(unmoderatedPost.getText().orElse(null))
                 .setImages(unmoderatedPost.getImages().stream()
-                        .map(ModerationController::toImage)
+                        .map(postImage -> new Image(postImage.getSizes().stream()
+                                .map(ModerationController::toImageSize)
+                                .collect(Collectors.toList())))
                         .collect(Collectors.toList()))
                 .setCreatedDt(unmoderatedPost.getCreatedDt().map(viewTimeFormatter::format).orElse(null))
                 .setChangedDt(unmoderatedPost.getChangedDt().map(viewTimeFormatter::format).orElse(null))
@@ -139,23 +143,29 @@ public class ModerationController {
     }
 
     @Nonnull
-    static Image toImage(@Nonnull PostImage postImage) {
-        requireNonNull(postImage, "postImage");
-        String title = postImage.getSrc().replaceAll("^.*/([\\-\\w]+\\.\\w+)", "$1");
-        if (postImage.getWidth().isPresent() && postImage.getHeight().isPresent()) {
-            title += " [" + postImage.getWidth().get() + 'x' + postImage.getHeight().get() + ']';
+    static ImageSize toImageSize(@Nonnull PostImageSize postImageSize) {
+        requireNonNull(postImageSize, "postImageSize");
+        String title = postImageSize.getSrc().replaceAll("^.*/([\\-\\w]+\\.\\w+)", "$1");
+        if (postImageSize.getWidth().isPresent() && postImageSize.getHeight().isPresent()) {
+            title += " [" + postImageSize.getWidth().get() + 'x' + postImageSize.getHeight().get() + ']';
         }
-        return new Image(postImage.getSrc(), title);
+        return new ImageSize(postImageSize.getUuid(), postImageSize.getSrc(), title);
     }
 
     private static UnmoderatedPost toUnmoderatedPost(UnmoderatedPost existedPost, PostForm postForm) {
+        Map<String, PostImageSize> sizeMap = existedPost.getImages().stream()
+                .flatMap(postImage -> postImage.getSizes().stream())
+                .collect(Collectors.toMap(PostImageSize::getUuid, Function.identity()));
         return existedPost.copy()
                 .setChannelId(Integer.parseInt(postForm.getChannelId()))
                 .setTitle(postForm.getTitle())
                 .setText(postForm.getText())
-                .setImages(postForm.getImage() != null
-                        ? Collections.singletonList(existedPost.getImages().get(Integer.parseInt(postForm.getImage())))
-                        : null)
+                .setImages(postForm.getImageSizes().stream()
+                        .map(size -> sizeMap.get(size))
+                        .filter(Objects::nonNull)
+                        .map(Collections::singletonList)
+                        .map(PostImage::new)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

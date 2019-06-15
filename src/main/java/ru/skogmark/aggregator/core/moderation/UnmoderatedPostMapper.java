@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.skogmark.aggregator.core.PostImage;
@@ -14,12 +16,15 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
 @Component
 class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
+    private static final Logger log = LoggerFactory.getLogger(UnmoderatedPostMapper.class);
+
     private final ObjectMapper objectMapper;
 
     UnmoderatedPostMapper(@Nonnull ObjectMapper objectMapper) {
@@ -60,7 +65,8 @@ class UnmoderatedPostMapper implements RowMapper<UnmoderatedPost> {
             ImagesWrapper wrapper = objectMapper.readValue(images, ImagesWrapper.class);
             return wrapper.getImages();
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to deserialize json to object: json=" + images, e);
+            log.error("Unable to deserialize json to object: json={}", images, e);
+            return Collections.emptyList();
         }
     }
 

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.skogmark.aggregator.channel.Source;
 import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSize;
 import ru.skogmark.aggregator.core.content.Content;
 import ru.skogmark.aggregator.core.content.ContentPost;
 import ru.skogmark.aggregator.core.content.Parser;
@@ -13,7 +14,7 @@ import ru.skogmark.aggregator.core.content.ParsingContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -70,26 +71,21 @@ public class VkApiParser implements Parser {
                 .setExternalId(item.getId())
                 .setText(item.getText().orElse(null));
         if (!item.getAttachments().isEmpty()) {
-            getPhoto(item.getAttachments()).ifPresent(photo -> {
-                List<PostImage> images = photo.getSizes().stream()
-                        .map(size -> PostImage.builder()
-                                .setSrc(size.getUrl())
-                                .setWidth(size.getWidth())
-                                .setHeight(size.getHeight())
-                                .build())
-                        .collect(Collectors.toList());
-                builder.setImages(images);
-            });
+            List<PostImage> images = item.getAttachments().stream()
+                    .filter(attachment -> "photo".equals(attachment.getType()))
+                    .filter(attachment -> attachment.getPhoto().isPresent())
+                    .map(attachment -> new PostImage(attachment.getPhoto().get().getSizes().stream()
+                            .map(size -> PostImageSize.builder()
+                                    .setUuid(UUID.randomUUID().toString())
+                                    .setSrc(size.getUrl())
+                                    .setWidth(size.getWidth())
+                                    .setHeight(size.getHeight())
+                                    .build())
+                            .collect(Collectors.toList())))
+                    .collect(Collectors.toList());
+            builder.setImages(images);
         }
         return builder.build();
-    }
-
-    private static Optional<Photo> getPhoto(List<Attachment> attachments) {
-        return attachments.stream()
-                .filter(attachment -> "photo".equals(attachment.getType()))
-                .filter(attachment -> attachment.getPhoto().isPresent())
-                .map(attachment -> attachment.getPhoto().get())
-                .findFirst();
     }
 
     private static long calculateNextOffset(@Nullable Long currentOffset,

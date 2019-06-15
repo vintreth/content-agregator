@@ -10,10 +10,7 @@ import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static org.junit.Assert.*;
@@ -51,32 +48,36 @@ public class WorkerTest {
                         .setTitle("title0")
                         .setText("text0")
                         .setImages(List.of(
-                                PostImage.builder()
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img0")
                                         .setWidth(640)
                                         .setHeight(480)
-                                        .build(),
-                                PostImage.builder()
+                                        .build())),
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img1")
                                         .setWidth(1024)
                                         .setHeight(768)
-                                        .build()))
+                                        .build()))))
                         .build(),
                 ContentPost.builder()
                         .setExternalId(53533136L)
                         .setTitle("title1")
                         .setText("text1")
                         .setImages(List.of(
-                                PostImage.builder()
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img2")
                                         .setWidth(640)
                                         .setHeight(480)
-                                        .build(),
-                                PostImage.builder()
+                                        .build())),
+                                new PostImage(List.of(PostImageSize.builder()
+                                        .setUuid(UUID.randomUUID().toString())
                                         .setSrc("img3")
                                         .setWidth(1024)
                                         .setHeight(768)
-                                        .build()))
+                                        .build()))))
                         .build()), 1002L);
         SourceContext sourceContext = SourceContext.builder()
                 .setSourceId(1)
