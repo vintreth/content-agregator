@@ -12,6 +12,7 @@ public class Post {
     private final String channel;
     private final Integer channelId;
     private final String title;
+    private final String previewText;
     private final String text;
     private final List<Image> images;
     private final String createdDt;
@@ -21,6 +22,7 @@ public class Post {
                  @Nonnull String channel,
                  @Nonnull Integer channelId,
                  @Nullable String title,
+                 @Nullable String previewText,
                  @Nullable String text,
                  @Nullable List<Image> images,
                  @Nullable String createdDt,
@@ -29,6 +31,7 @@ public class Post {
         this.channel = requireNonNull(channel, "channel");
         this.channelId = requireNonNull(channelId, "channelId");
         this.title = title;
+        this.previewText = previewText;
         this.text = text;
         this.images = images == null ? Collections.emptyList() : List.copyOf(images);
         this.createdDt = createdDt;
@@ -42,6 +45,7 @@ public class Post {
                 ", channel='" + channel + '\'' +
                 ", channelId=" + channelId +
                 ", title='" + title + '\'' +
+                ", previewText='" + previewText + '\'' +
                 ", text='" + text + '\'' +
                 ", images=" + images +
                 ", createdDt='" + createdDt + '\'' +
@@ -63,6 +67,10 @@ public class Post {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getPreviewText() {
+        return previewText;
     }
 
     public String getText() {
@@ -94,6 +102,7 @@ public class Post {
         private String channel;
         private Integer channelId;
         private String title;
+        private String previewText;
         private String text;
         private List<Image> images;
         private String createdDt;
@@ -103,7 +112,7 @@ public class Post {
         }
 
         public Post build() {
-            return new Post(id, channel, channelId, title, text, images, createdDt, changedDt);
+            return new Post(id, channel, channelId, title, previewText, text, images, createdDt, changedDt);
         }
 
         public Builder setId(Long id) {
@@ -123,6 +132,11 @@ public class Post {
 
         public Builder setTitle(String title) {
             this.title = title;
+            return this;
+        }
+
+        public Builder setPreviewText(String previewText) {
+            this.previewText = previewText;
             return this;
         }
 

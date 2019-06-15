@@ -24,19 +24,21 @@
                             <c:forEach items="${posts}" var="post">
                                 <tr>
                                     <td><a href="/admin/moderation/posts/${post.id}/">${post.id}</a></td>
-                                    <td>${post.channel}</td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.channel}</a></td>
                                     <td><a href="/admin/moderation/posts/${post.id}/">${post.title}</a></td>
-                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.text}</a></td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.previewText}</a></td>
                                     <td>
+                                        <a href="/admin/moderation/posts/${post.id}/">
                                         <c:if test="${post.imagesSize > 0}">
                                             <span class="label label-success label-rounded">${post.imagesSize}</span>
                                         </c:if>
                                         <c:if test="${post.imagesSize <= 0}">
                                             <span class="label label-danger label-rounded">Нет</span>
                                         </c:if>
+                                        </a>
                                     </td>
-                                    <td>${post.createdDt}</td>
-                                    <td>${post.changedDt}</td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.createdDt}</a></td>
+                                    <td><a href="/admin/moderation/posts/${post.id}/">${post.changedDt}</a></td>
                                 </tr>
                             </c:forEach>
                         </table>

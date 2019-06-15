@@ -88,7 +88,7 @@ public class Worker implements InitializingBean {
                             .map(post -> toUnmoderatedPost(post, channelId))
                             .collect(Collectors.toList()));
                     if (!content.getNextOffset().equals(offset)) {
-                        sourceService.updateOffset(sourceContext.getSourceId(), content.getNextOffset());
+                        sourceService.upsertOffset(sourceContext.getSourceId(), content.getNextOffset());
                     }
                 })
                 .build());

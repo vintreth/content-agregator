@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
@@ -91,7 +92,12 @@ public class AggregatorApplication {
     @Bean
     HttpClient httpClient() {
         // todo client settings
-        return HttpClientBuilder.create().build();
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectTimeout(500)
+                        .setSocketTimeout(500)
+                        .build())
+                .build();
     }
 
     @Bean

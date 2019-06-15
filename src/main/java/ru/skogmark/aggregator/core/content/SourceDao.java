@@ -32,10 +32,12 @@ class SourceDao {
         return offset;
     }
 
-    boolean updateOffset(int sourceId, long offsetValue) {
-        log.info("updateOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
+    boolean upsertOffset(int sourceId, long offsetValue) {
+        log.info("upsertOffset(): sourceId={}, offsetValue={}", sourceId, offsetValue);
         return jdbcTemplate.update(
-                "update source_offset set offset_value = :offsetValue where source_id = :sourceId",
+                "insert into source_offset as t (source_id, offset_value) values (:sourceId, :offsetValue)" +
+                        " on conflict (source_id) do update" +
+                        " set offset_value = :offsetValue where t.source_id = :sourceId",
                 new MapSqlParameterSource()
                         .addValue("sourceId", sourceId)
                         .addValue("offsetValue", offsetValue)) > 0;

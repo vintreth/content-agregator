@@ -119,6 +119,16 @@ public class ModerationController {
                 .setChannel(channel.getName())
                 .setChannelId(channel.getId())
                 .setTitle(unmoderatedPost.getTitle().orElse(null))
+                .setPreviewText(unmoderatedPost.getText()
+                        .map(text -> {
+                            if (text.length() <= 256) {
+                                return text;
+                            }
+                            return Arrays.stream(text.split(" "))
+                                    .limit(50)
+                                    .collect(Collectors.joining(" ")) + "...";
+                        })
+                        .orElse(null))
                 .setText(unmoderatedPost.getText().orElse(null))
                 .setImages(unmoderatedPost.getImages().stream()
                         .map(ModerationController::toImage)

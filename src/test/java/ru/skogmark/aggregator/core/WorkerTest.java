@@ -126,7 +126,7 @@ public class WorkerTest {
                                        ArgumentCaptor<Long> offsetCaptor) {
         SourceService sourceService = mock(SourceService.class);
         when(sourceService.getOffset(1)).thenReturn(Optional.of(1000L));
-        doAnswer(invocation -> null).when(sourceService).updateOffset(sourceIdCaptor.capture(), offsetCaptor.capture());
+        doAnswer(invocation -> null).when(sourceService).upsertOffset(sourceIdCaptor.capture(), offsetCaptor.capture());
 
         PremoderationQueueService premoderationQueueService = mock(PremoderationQueueServiceImpl.class);
         doAnswer(invocation -> null).when(premoderationQueueService).enqueuePosts(postsCaptor.capture());

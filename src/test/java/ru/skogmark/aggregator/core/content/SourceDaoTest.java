@@ -19,7 +19,7 @@ public class SourceDaoTest {
 
         ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
         verify(jdbcTemplate, times(1))
-                .queryForObject(any(), captor.capture(), (Class<Long>) any());
+                .queryForList(any(), captor.capture(), (Class<Long>) any());
         assertEquals(3, captor.getValue().getValue("sourceId"));
     }
 }
