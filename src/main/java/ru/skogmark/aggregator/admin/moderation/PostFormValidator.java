@@ -7,7 +7,7 @@ import java.util.Optional;
 @Component
 class PostFormValidator {
     private static final int MAX_TITLE_LENGTH = 128;
-    private static final int MAX_TEXT_LENGTH = 255;
+    private static final int MAX_TEXT_LENGTH = 4096;
 
     Optional<ValidationError> validateForm(PostForm form) {
         if (form.getPublish() != null && !form.isPublish()) {
