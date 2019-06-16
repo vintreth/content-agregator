@@ -5,8 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.skogmark.aggregator.core.PostImageSerializer;
+import ru.skogmark.common.util.DateUtils;
 
 import javax.annotation.Nonnull;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +25,12 @@ class PremoderationQueueDao {
     private static final Logger log = LoggerFactory.getLogger(PremoderationQueueDao.class);
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final UnmoderatedPostMapper unmoderatedPostMapper;
+    private final PostImageSerializer postImageSerializer;
 
     PremoderationQueueDao(@Nonnull NamedParameterJdbcTemplate jdbcTemplate,
-                          @Nonnull UnmoderatedPostMapper unmoderatedPostMapper) {
+                          @Nonnull PostImageSerializer postImageSerializer) {
         this.jdbcTemplate = requireNonNull(jdbcTemplate, "jdbcTemplate");
-        this.unmoderatedPostMapper = requireNonNull(unmoderatedPostMapper, "unmoderatedPostMapper");
+        this.postImageSerializer = requireNonNull(postImageSerializer, "postImageSerializer");
     }
 
     @Nonnull
@@ -39,7 +44,7 @@ class PremoderationQueueDao {
                         .addValue("channelId", post.getChannelId())
                         .addValue("title", post.getTitle().orElse(null))
                         .addValue("text", post.getText().orElse(null))
-                        .addValue("images", unmoderatedPostMapper.getSerializedValue(post.getImages())),
+                        .addValue("images", postImageSerializer.serialize(post.getImages())),
                 Long.class);
         log.info("Post inserted: id={}", id);
         return post.copy().setId(id).build();
@@ -52,7 +57,7 @@ class PremoderationQueueDao {
                 "select " + FIELDS + " from premoderation_queue where id = :id",
                 new MapSqlParameterSource()
                         .addValue("id", id),
-                unmoderatedPostMapper).stream().findFirst();
+                this::mapRow).stream().findFirst();
         log.info("Post obtained: post={}", post);
         return post;
     }
@@ -64,7 +69,7 @@ class PremoderationQueueDao {
                 new MapSqlParameterSource()
                         .addValue("limit", limit)
                         .addValue("offset", offset),
-                unmoderatedPostMapper);
+                this::mapRow);
         log.info("Posts obtained: count={}", unmoderatedPosts.size());
         return unmoderatedPosts;
     }
@@ -89,7 +94,7 @@ class PremoderationQueueDao {
                         .addValue("channelId", post.getChannelId())
                         .addValue("title", post.getTitle().orElse(null))
                         .addValue("text", post.getText().orElse(null))
-                        .addValue("images", unmoderatedPostMapper.getSerializedValue(post.getImages()))
+                        .addValue("images", postImageSerializer.serialize(post.getImages()))
                         .addValue("id", post.getId().get())) > 0;
         if (updated) {
             log.info("Post updated: post={}", post);
@@ -109,5 +114,21 @@ class PremoderationQueueDao {
             log.info("Post not deleted: id={}", id);
         }
         return deleted;
+    }
+
+    private UnmoderatedPost mapRow(ResultSet rs, int rowNum) throws SQLException {
+        String images = rs.getString("images");
+        Timestamp changedDt = rs.getTimestamp("changed_dt");
+        return UnmoderatedPost.builder()
+                .setId(rs.getLong("id"))
+                .setChannelId(rs.getInt("channel_id"))
+                .setTitle(rs.getString("title"))
+                .setText(rs.getString("text"))
+                .setImages(images != null ? postImageSerializer.deserialize(images) : null)
+                .setCreatedDt(DateUtils.toZonedDateTime(rs.getTimestamp("created_dt")))
+                .setChangedDt(changedDt != null
+                        ? DateUtils.toZonedDateTime(changedDt)
+                        : null)
+                .build();
     }
 }

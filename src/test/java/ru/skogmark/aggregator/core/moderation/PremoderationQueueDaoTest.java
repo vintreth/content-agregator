@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.skogmark.aggregator.ApplicationContextAwareTest;
 import ru.skogmark.aggregator.core.PostImage;
+import ru.skogmark.aggregator.core.PostImageSerializer;
 import ru.skogmark.aggregator.core.PostImageSize;
 
 import java.util.List;
@@ -17,13 +18,13 @@ import static org.mockito.Mockito.*;
 
 public class PremoderationQueueDaoTest extends ApplicationContextAwareTest {
     @Autowired
-    private UnmoderatedPostMapper mapper;
+    private PostImageSerializer serializer;
 
     @Test
     public void shouldMapParamsCorrectlyWhenInserting() {
         NamedParameterJdbcTemplate jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
         when(jdbcTemplate.queryForObject(any(), (MapSqlParameterSource) any(), (Class<Long>) any())).thenReturn(100L);
-        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, mapper);
+        PremoderationQueueDao dao = new PremoderationQueueDao(jdbcTemplate, serializer);
         UnmoderatedPost post = UnmoderatedPost.builder()
                 .setChannelId(453453)
                 .setTitle("title")
