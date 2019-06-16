@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/templates" %>
+<%@ taglib prefix="w" tagdir="/WEB-INF/tags/widgets" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <t:main title="Посты на модерации">
     <jsp:attribute name="content">
@@ -46,5 +47,6 @@
                 </div>
             </div>
         </div>
+        <w:pagination baseUrl="${baseUrl}" pages="${pages}"/>
     </jsp:attribute>
 </t:main>

@@ -61,7 +61,8 @@ public class ModerationController {
 
         model.addAttribute("posts", viewPosts);
         model.addAttribute("page", page);
-        model.addAttribute("pagesCount", paginator.getPagesCount());
+        model.addAttribute("baseUrl", "/admin/moderation/posts/page");
+        model.addAttribute("pages", paginator.getPages());
         return VIEW_MODERATION_POSTS;
     }
 

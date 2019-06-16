@@ -1,5 +1,10 @@
 package ru.skogmark.aggregator.admin;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
+
 public class Paginator {
     private final int pageNum;
     private final int onPageCount;
@@ -13,6 +18,15 @@ public class Paginator {
 
     public int getPagesCount() {
         return (int) Math.ceil(totalCount / onPageCount);
+    }
+
+    public List<Page> getPages() {
+        return List.of(
+                new Page(1, "1"),
+                new Page(2, "2"),
+                new Page(3, "3"),
+                new Page(4, "4"),
+                new Page(5, "5"));
     }
 
     public OffsetInfo getOffsetInfo() {
@@ -34,6 +48,25 @@ public class Paginator {
 
         public long getOffset() {
             return offset;
+        }
+    }
+
+    public static class Page {
+        private final int num;
+        private final String text;
+
+        public Page(int num, @Nonnull String text) {
+            this.num = num;
+            this.text = requireNonNull(text, "text");
+        }
+
+        public int getNum() {
+            return num;
+        }
+
+        @Nonnull
+        public String getText() {
+            return text;
         }
     }
 }
