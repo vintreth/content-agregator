@@ -159,6 +159,12 @@
                                 <span class="hide-menu">Download</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/admin/topics/" aria-expanded="false">
+                                <i class="mdi mdi-folder-multiple"></i>
+                                <span class="hide-menu">Topics</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
