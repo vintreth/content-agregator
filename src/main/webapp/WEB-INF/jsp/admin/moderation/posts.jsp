@@ -44,9 +44,9 @@
                             </c:forEach>
                         </table>
                     </div>
+                    <w:pagination baseUrl="${baseUrl}" pages="${pages}"/>
                 </div>
             </div>
         </div>
-        <w:pagination baseUrl="${baseUrl}" pages="${pages}"/>
     </jsp:attribute>
 </t:main>

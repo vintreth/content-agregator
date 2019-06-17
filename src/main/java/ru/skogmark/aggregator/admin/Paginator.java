@@ -1,36 +1,43 @@
 package ru.skogmark.aggregator.admin;
 
-import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Paginator {
-    private final int pageNum;
+    private final int currentPage;
     private final int onPageCount;
     private final long totalCount;
 
-    public Paginator(int pageNum, int onPageCount, long totalCount) {
-        this.pageNum = pageNum - 1;
-        this.onPageCount = onPageCount;
-        this.totalCount = totalCount;
+    public Paginator(int currentPage, int itemsOnPageCount, long totalItemsCount) {
+        this.currentPage = currentPage - 1;
+        this.onPageCount = itemsOnPageCount;
+        this.totalCount = totalItemsCount;
     }
 
     public int getPagesCount() {
         return (int) Math.ceil(totalCount / onPageCount);
     }
 
-    public List<Page> getPages() {
-        return List.of(
-                new Page(1, "1"),
-                new Page(2, "2"),
-                new Page(3, "3"),
-                new Page(4, "4"),
-                new Page(5, "5"));
+    public OffsetInfo getOffsetInfo() {
+        return new OffsetInfo(onPageCount, currentPage * onPageCount);
     }
 
-    public OffsetInfo getOffsetInfo() {
-        return new OffsetInfo(onPageCount, pageNum * onPageCount);
+    public List<Page> getPages() {
+        List<Page> pages = new ArrayList<>();
+        if (currentPage > 0) {
+            pages.add(new Page(1, true, false, false));
+        }
+        int pagesCount = getPagesCount();
+        pages.addAll(IntStream.range(0, pagesCount)
+                .filter(index -> Math.abs(index - currentPage) <= 2)
+                .mapToObj(index -> new Page(index + 1, false, false, index == currentPage))
+                .collect(Collectors.toList()));
+        if (currentPage < pagesCount - 1) {
+            pages.add(new Page(pagesCount, false, true, false));
+        }
+        return pages;
     }
 
     public static class OffsetInfo {
@@ -53,20 +60,31 @@ public class Paginator {
 
     public static class Page {
         private final int num;
-        private final String text;
+        private final boolean first;
+        private final boolean last;
+        private final boolean current;
 
-        public Page(int num, @Nonnull String text) {
+        public Page(int num, boolean first, boolean last, boolean current) {
             this.num = num;
-            this.text = requireNonNull(text, "text");
+            this.first = first;
+            this.last = last;
+            this.current = current;
         }
 
         public int getNum() {
             return num;
         }
 
-        @Nonnull
-        public String getText() {
-            return text;
+        public boolean isFirst() {
+            return first;
+        }
+
+        public boolean isLast() {
+            return last;
+        }
+
+        public boolean isCurrent() {
+            return current;
         }
     }
 }
