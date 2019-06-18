@@ -1,17 +1,20 @@
 package ru.skogmark.aggregator.admin;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Paginator {
+    private static final int ITEMS_COUNT_ON_SIDE = 2;
+
     private final int currentPage;
     private final int onPageCount;
     private final long totalCount;
 
     public Paginator(int currentPage, int itemsOnPageCount, long totalItemsCount) {
-        this.currentPage = currentPage - 1;
+        this.currentPage = currentPage;
         this.onPageCount = itemsOnPageCount;
         this.totalCount = totalItemsCount;
     }
@@ -21,23 +24,24 @@ public class Paginator {
     }
 
     public OffsetInfo getOffsetInfo() {
-        return new OffsetInfo(onPageCount, currentPage * onPageCount);
+        return new OffsetInfo(onPageCount, (currentPage - 1) * onPageCount);
     }
 
     public List<Page> getPages() {
-        List<Page> pages = new ArrayList<>();
-        if (currentPage > 0) {
-            pages.add(new Page(1, true, false, false));
+        Map<Integer, Page> pages = new HashMap<>();
+        int lastPage = getPagesCount();
+        for (int i = currentPage - ITEMS_COUNT_ON_SIDE; i <= currentPage + ITEMS_COUNT_ON_SIDE; i++) {
+            if (i < 1 || i > lastPage) {
+                continue;
+            }
+            pages.put(i, Page.newPage(i , i == currentPage));
         }
-        int pagesCount = getPagesCount();
-        pages.addAll(IntStream.range(0, pagesCount)
-                .filter(index -> Math.abs(index - currentPage) <= 2)
-                .mapToObj(index -> new Page(index + 1, false, false, index == currentPage))
-                .collect(Collectors.toList()));
-        if (currentPage < pagesCount - 1) {
-            pages.add(new Page(pagesCount, false, true, false));
-        }
-        return pages;
+        pages.computeIfAbsent(1, k -> Page.newFirstPage());
+        pages.computeIfAbsent(lastPage, Page::newLastPage);
+        return pages.entrySet().stream()
+                .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public static class OffsetInfo {
@@ -64,11 +68,23 @@ public class Paginator {
         private final boolean last;
         private final boolean current;
 
-        public Page(int num, boolean first, boolean last, boolean current) {
+        private Page(int num, boolean first, boolean last, boolean current) {
             this.num = num;
             this.first = first;
             this.last = last;
             this.current = current;
+        }
+
+        public static Page newPage(int num, boolean current) {
+            return new Page(num, false, false, current);
+        }
+
+        public static Page newFirstPage() {
+            return new Page(1, true, false, false);
+        }
+
+        public static Page newLastPage(int num) {
+            return new Page(num, false, true, false);
         }
 
         public int getNum() {
