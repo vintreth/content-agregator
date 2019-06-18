@@ -19,10 +19,6 @@ public class Paginator {
         this.totalCount = totalItemsCount;
     }
 
-    public int getPagesCount() {
-        return (int) Math.ceil(totalCount / onPageCount);
-    }
-
     public OffsetInfo getOffsetInfo() {
         return new OffsetInfo(onPageCount, (currentPage - 1) * onPageCount);
     }
@@ -42,6 +38,10 @@ public class Paginator {
                 .sorted(Comparator.comparingInt(Map.Entry::getKey))
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
+    }
+
+    private int getPagesCount() {
+        return (int) Math.ceil((float) totalCount / (float) onPageCount);
     }
 
     public static class OffsetInfo {
