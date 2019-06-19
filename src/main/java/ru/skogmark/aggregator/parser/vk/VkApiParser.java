@@ -14,6 +14,7 @@ import ru.skogmark.aggregator.core.content.ParsingContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,31 @@ public class VkApiParser implements Parser {
                         parsingContext.getOnContentReceivedCallback().accept(content);
                     }
                 });
+    }
+
+    @Nonnull
+    public Optional<Content> parseSync(@Nonnull ParsingContext parsingContext) {
+        requireNonNull(parsingContext, "parsingContext");
+        log.info("Parsing content in vk: limit={}, offset={}",
+                parsingContext.getLimit(), parsingContext.getOffset().orElse(null));
+        Source source = Source.getById(parsingContext.getSourceId());
+        VkApiResult result = vkApiClient.getWall(GetWallRequest.builder()
+                .setOwner(toOwner(source))
+                .setCount(parsingContext.getLimit())
+                .setOffset(parsingContext.getOffset().orElse(null))
+                .build());
+        if (result.isError() || result.getResponse().isEmpty()) {
+            log.error("Vk api returned error result: result={}", result);
+            return Optional.empty();
+        }
+        return Optional.of(new Content(
+                result.getResponse().get().getItems().stream()
+                        .map(VkApiParser::toPost)
+                        .collect(Collectors.toList()),
+                calculateNextOffset(
+                        parsingContext.getOffset().orElse(null),
+                        parsingContext.getLimit(),
+                        result.getResponse().get().getCount())));
     }
 
     private static Owner toOwner(Source source) {

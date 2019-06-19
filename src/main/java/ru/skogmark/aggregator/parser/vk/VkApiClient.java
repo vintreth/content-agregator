@@ -8,29 +8,32 @@ import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import ru.skogmark.aggregator.client.JsonHttpClient;
+import ru.skogmark.aggregator.client.QueryStringBuilder;
 import ru.skogmark.aggregator.prop.VkParserProperties;
 import ru.skogmark.framework.request.OutgoingRequestService;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
 @Component
 class VkApiClient {
+    private static final Logger log = LoggerFactory.getLogger(VkApiClient.class);
+
+    private final JsonHttpClient httpClient;
     private final OutgoingRequestService outgoingRequestService;
     private final VkParserProperties vkParserProperties;
     private final ObjectMapper objectMapper;
 
-    VkApiClient(@Nonnull OutgoingRequestService outgoingRequestService,
+    VkApiClient(@Nonnull JsonHttpClient httpClient,
+                @Nonnull OutgoingRequestService outgoingRequestService,
                 @Nonnull VkParserProperties vkParserProperties,
                 @Nonnull ObjectMapper objectMapper) {
+        this.httpClient = requireNonNull(httpClient, "httpClient");
         this.outgoingRequestService = requireNonNull(outgoingRequestService, "outgoingRequestService");
         this.vkParserProperties = requireNonNull(vkParserProperties, "vkParserProperties");
         this.objectMapper = requireNonNull(objectMapper, "objectMapper");
@@ -41,48 +44,30 @@ class VkApiClient {
         requireNonNull(onResultReceivedCallback, "onResultReceivedCallback");
         outgoingRequestService.execute(
                 HttpHost.create(vkParserProperties.getApiUrl()),
-                // todo wrap concat with builder
-                new HttpGet("/method/wall.get?" + new QueryStringBuilder()
-                        .put("owner_id", request.getOwner().getId())
-                        .put("count", request.getCount())
-                        .put("access_token", vkParserProperties.getAccessToken())
-                        .put("v", vkParserProperties.getVersion())
-                        .put("offset", request.getOffset().orElse(null))
+                new HttpGet(QueryStringBuilder.of("/method/wall.get")
+                        .addParam("owner_id", request.getOwner().getId())
+                        .addParam("count", request.getCount())
+                        .addParam("access_token", vkParserProperties.getAccessToken())
+                        .addParam("v", vkParserProperties.getVersion())
+                        .addParam("offset", request.getOffset().orElse(null))
                         .build()),
                 new JsonDeserializerCallbackDecorator<>(onResultReceivedCallback, VkApiResult.class, objectMapper));
     }
 
-    private static class QueryStringBuilder {
-        private final Map<String, String> params = new HashMap<>();
-
-        QueryStringBuilder put(@Nonnull String paramName, int paramValue) {
-            put(paramName, String.valueOf(paramValue));
-            return this;
-        }
-
-        QueryStringBuilder put(@Nonnull String paramName, long paramValue) {
-            put(paramName, String.valueOf(paramValue));
-            return this;
-        }
-
-        QueryStringBuilder put(@Nonnull String paramName, @Nullable Object paramValue) {
-            put(paramName, paramValue == null ? null : String.valueOf(paramValue));
-            return this;
-        }
-
-        QueryStringBuilder put(@Nonnull String paramName, @Nullable String paramValue) {
-            requireNonNull(paramName, "paramName");
-            if (paramValue != null && !paramValue.isEmpty()) {
-                params.put(paramName, paramValue);
-            }
-            return this;
-        }
-
-        String build() {
-            return params.entrySet().stream()
-                    .map(entry -> entry.getKey() + "=" + entry.getValue())
-                    .collect(Collectors.joining("&"));
-        }
+    @Nonnull
+    VkApiResult getWall(@Nonnull GetWallRequest request) {
+        requireNonNull(request, "request");
+        log.info("getWall(): request={}", request);
+        return httpClient.execute(HttpHost.create(
+                vkParserProperties.getApiUrl()),
+                new HttpGet(QueryStringBuilder.of("/method/wall.get")
+                        .addParam("owner_id", request.getOwner().getId())
+                        .addParam("count", request.getCount())
+                        .addParam("access_token", vkParserProperties.getAccessToken())
+                        .addParam("v", vkParserProperties.getVersion())
+                        .addParam("offset", request.getOffset().orElse(null))
+                        .build()),
+                VkApiResult.class);
     }
 
     private static class JsonDeserializerCallbackDecorator<T> implements Consumer<HttpResponse> {

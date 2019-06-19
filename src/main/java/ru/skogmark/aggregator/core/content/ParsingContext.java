@@ -16,11 +16,11 @@ public class ParsingContext {
     private ParsingContext(@Nonnull Integer sourceId,
                            @Nonnull Integer limit,
                            @Nullable Long offset,
-                           @Nonnull Consumer<Content> onContentReceivedCallback) {
+                           @Nullable Consumer<Content> onContentReceivedCallback) {
         this.sourceId = requireNonNull(sourceId, "sourceId");
         this.limit = requireNonNull(limit, "limit");
         this.offset = offset;
-        this.onContentReceivedCallback = requireNonNull(onContentReceivedCallback, "onContentReceivedCallback");
+        this.onContentReceivedCallback = onContentReceivedCallback;
     }
 
     @Override
