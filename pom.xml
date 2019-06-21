@@ -16,13 +16,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.github.ErnyTech</groupId>
-            <artifactId>JTdLib</artifactId>
-            <version>v0.1.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Java-TDLib.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>

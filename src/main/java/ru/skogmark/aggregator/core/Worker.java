@@ -51,7 +51,6 @@ public class Worker implements InitializingBean {
                 0, 1, TimeUnit.SECONDS);
     }
 
-    // todo tests
     void parseContentAndEnqueuePosts(int channelId,
                                      SourceContext sourceContext,
                                      ZonedDateTime parsingTime) {
