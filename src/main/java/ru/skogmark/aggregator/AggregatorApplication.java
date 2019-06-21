@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.skogmark.aggregator.prop.AggregatorProperties;
 import ru.skogmark.aggregator.prop.DataSourceProperties;
 import ru.skogmark.common.migration.MigrationService;
-import ru.skogmark.framework.request.OutgoingRequestService;
 
 import javax.sql.DataSource;
 import java.util.Set;
@@ -77,14 +77,14 @@ public class AggregatorApplication {
     }
 
     @Bean
-    ExecutorService outgoingRequestExecutor(AggregatorProperties aggregatorProperties) {
-        return Executors.newFixedThreadPool(aggregatorProperties.getOutputRequestThreadPoolSize(),
+    ExecutorService taskExecutor(AggregatorProperties aggregatorProperties) {
+        return Executors.newFixedThreadPool(aggregatorProperties.getTaskExecutorThreadPoolSize(),
                 new ThreadFactory() {
                     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
                     @Override
                     public Thread newThread(Runnable runnable) {
-                        return new Thread(runnable, "outgoing-request-" + threadNumber.getAndIncrement());
+                        return new Thread(runnable, "task-executor-" + threadNumber.getAndIncrement());
                     }
                 });
     }
@@ -92,17 +92,15 @@ public class AggregatorApplication {
     @Bean
     HttpClient httpClient(AggregatorProperties properties) {
         // todo client settings
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(100);
         return HttpClientBuilder.create()
+                .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout(properties.getHttpClient().getConnectionTimeout())
                         .setSocketTimeout(properties.getHttpClient().getSocketTimeout())
                         .build())
                 .build();
-    }
-
-    @Bean
-    OutgoingRequestService outgoingRequestService(ExecutorService outgoingRequestExecutor, HttpClient httpClient) {
-        return new OutgoingRequestService(httpClient, outgoingRequestExecutor);
     }
 
     @Bean

@@ -1,7 +1,9 @@
 package ru.skogmark.aggregator.core.content;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 public interface Parser {
-    void parse(@Nonnull ParsingContext parsingContext);
+    @Nonnull
+    Optional<Content> parse(@Nonnull ParsingContext parsingContext);
 }

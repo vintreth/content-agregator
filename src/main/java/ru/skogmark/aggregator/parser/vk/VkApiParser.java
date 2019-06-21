@@ -30,36 +30,9 @@ public class VkApiParser implements Parser {
         this.vkApiClient = requireNonNull(vkApiClient, "vkApiClient");
     }
 
-    @Override
-    public void parse(@Nonnull ParsingContext parsingContext) {
-        requireNonNull(parsingContext, "parsingContext");
-        log.info("Parsing content in vk: limit={}, offset={}",
-                parsingContext.getLimit(), parsingContext.getOffset().orElse(null));
-        Source source = Source.getById(parsingContext.getSourceId());
-        vkApiClient.getWall(GetWallRequest.builder()
-                        .setOwner(toOwner(source))
-                        .setCount(parsingContext.getLimit())
-                        .setOffset(parsingContext.getOffset().orElse(null))
-                        .build(),
-                result -> {
-                    if (result.isError() || result.getResponse().isEmpty()) {
-                        log.error("Vk api returned error result: result={}", result);
-                    } else {
-                        Content content = new Content(
-                                result.getResponse().get().getItems().stream()
-                                        .map(VkApiParser::toPost)
-                                        .collect(Collectors.toList()),
-                                calculateNextOffset(
-                                        parsingContext.getOffset().orElse(null),
-                                        parsingContext.getLimit(),
-                                        result.getResponse().get().getCount()));
-                        parsingContext.getOnContentReceivedCallback().accept(content);
-                    }
-                });
-    }
-
     @Nonnull
-    public Optional<Content> parseSync(@Nonnull ParsingContext parsingContext) {
+    @Override
+    public Optional<Content> parse(@Nonnull ParsingContext parsingContext) {
         requireNonNull(parsingContext, "parsingContext");
         log.info("Parsing content in vk: limit={}, offset={}",
                 parsingContext.getLimit(), parsingContext.getOffset().orElse(null));

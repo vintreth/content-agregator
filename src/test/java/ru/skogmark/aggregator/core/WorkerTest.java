@@ -2,7 +2,10 @@ package ru.skogmark.aggregator.core;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import ru.skogmark.aggregator.core.content.*;
+import ru.skogmark.aggregator.core.content.Content;
+import ru.skogmark.aggregator.core.content.ContentPost;
+import ru.skogmark.aggregator.core.content.Parser;
+import ru.skogmark.aggregator.core.content.SourceService;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueService;
 import ru.skogmark.aggregator.core.moderation.PremoderationQueueServiceImpl;
 import ru.skogmark.aggregator.core.moderation.UnmoderatedPost;
@@ -11,6 +14,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static org.junit.Assert.*;
@@ -91,7 +95,7 @@ public class WorkerTest {
         Worker worker = createWorker(postsCaptor, sourceIdCaptor, offsetCaptor);
         ZonedDateTime parsingTime = ZonedDateTime.of(2019, 1, 1, 12, 0, 0, 0, ZoneId.systemDefault());
 
-        worker.parseContentAndEnqueuePosts(1, sourceContext, parsingTime);
+        worker.parseContentIfNeeded(1, sourceContext, parsingTime);
 
         List<UnmoderatedPost> unmoderatedPosts = postsCaptor.getValue();
         assertEquals(2, unmoderatedPosts.size());
@@ -115,10 +119,7 @@ public class WorkerTest {
 
     private static Parser createParser(Content content) {
         Parser parser = mock(Parser.class);
-        doAnswer(invocation -> {
-            invocation.getArgumentAt(0, ParsingContext.class).getOnContentReceivedCallback().accept(content);
-            return null;
-        }).when(parser).parse(any());
+        when(parser.parse(any())).thenReturn(Optional.of(content));
         return parser;
     }
 
@@ -132,8 +133,15 @@ public class WorkerTest {
         PremoderationQueueService premoderationQueueService = mock(PremoderationQueueServiceImpl.class);
         doAnswer(invocation -> null).when(premoderationQueueService).enqueuePosts(postsCaptor.capture());
 
+        ExecutorService executor = mock(ExecutorService.class);
+        doAnswer(invocation -> {
+            invocation.getArgumentAt(0, Runnable.class).run();
+            return null;
+        }).when(executor).execute(any());
+
         return new Worker(
                 mock(ScheduledExecutorService.class),
+                executor,
                 Collections.emptyList(),
                 sourceService,
                 premoderationQueueService,

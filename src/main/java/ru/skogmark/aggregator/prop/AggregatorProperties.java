@@ -10,6 +10,7 @@ import ru.skogmark.framework.Application;
 @PropertySource(Application.CONFIG_LOCATION_PROPERTY + "/aggregator.properties")
 public class AggregatorProperties {
     private int outputRequestThreadPoolSize;
+    private int taskExecutorThreadPoolSize;
     private HttpClient httpClient;
 
     public int getOutputRequestThreadPoolSize() {
@@ -18,6 +19,15 @@ public class AggregatorProperties {
 
     public void setOutputRequestThreadPoolSize(int outputRequestThreadPoolSize) {
         this.outputRequestThreadPoolSize = outputRequestThreadPoolSize;
+    }
+
+    public int getTaskExecutorThreadPoolSize() {
+        return taskExecutorThreadPoolSize;
+    }
+
+    public AggregatorProperties setTaskExecutorThreadPoolSize(int taskExecutorThreadPoolSize) {
+        this.taskExecutorThreadPoolSize = taskExecutorThreadPoolSize;
+        return this;
     }
 
     public HttpClient getHttpClient() {

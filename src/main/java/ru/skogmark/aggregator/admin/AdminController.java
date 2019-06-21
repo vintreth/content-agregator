@@ -68,7 +68,7 @@ public class AdminController {
         DownloadForm downloadForm = new DownloadForm(form);
         // todo validate form
         int sourceId = Integer.parseInt(downloadForm.getSourceId());
-        worker.parseContent(SourceContext.builder()
+        worker.parseContentAsync(SourceContext.builder()
                 .setSourceId(sourceId)
                 .setTimetable(Timetable.of(Collections.emptySet()))
                 .setParser(getParser(Source.getById(sourceId)))

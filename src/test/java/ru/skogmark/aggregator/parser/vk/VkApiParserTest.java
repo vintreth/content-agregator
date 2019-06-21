@@ -9,36 +9,19 @@ import ru.skogmark.aggregator.core.content.ParsingContext;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class VkApiParserTest {
-    @Test
-    public void should_parse_content_when_offset_stored() {
-        VkApiResult result = newResult();
-        VkApiParser parser = mockParser(result);
-        parser.parse(ParsingContext.builder()
-                .setSourceId(1)
-                .setLimit(10)
-                .setOffset(41210L)
-                .setOnContentReceivedCallback(content -> {
-                    assertNotNull(content);
-                    assertEquals(2, content.getPosts().size());
-                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
-                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
-                    assertEquals(41200L, content.getNextOffset().longValue());
-                })
-                .build());
-    }
-
     @Test
     public void should_parse_content_sync_when_offset_stored() {
         VkApiResult result = newResult();
         VkApiParser parser = mockParser(result);
-        Optional<Content> content = parser.parseSync(ParsingContext.builder()
+        Optional<Content> content = parser.parse(ParsingContext.builder()
                 .setSourceId(1)
                 .setLimit(10)
                 .setOffset(41210L)
@@ -51,28 +34,10 @@ public class VkApiParserTest {
     }
 
     @Test
-    public void should_parse_content_when_offset_is_null() {
-        VkApiResult result = newResult();
-        VkApiParser parser = mockParser(result);
-        parser.parse(ParsingContext.builder()
-                .setSourceId(1)
-                .setLimit(10)
-                .setOffset(null)
-                .setOnContentReceivedCallback(content -> {
-                    assertNotNull(content);
-                    assertEquals(2, content.getPosts().size());
-                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
-                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
-                    assertEquals(content.getNextOffset().longValue(), 45490L);
-                })
-                .build());
-    }
-
-    @Test
     public void should_parse_content_sync_when_offset_is_null() {
         VkApiResult result = newResult();
         VkApiParser parser = mockParser(result);
-        Optional<Content> content = parser.parseSync(ParsingContext.builder()
+        Optional<Content> content = parser.parse(ParsingContext.builder()
                 .setSourceId(1)
                 .setLimit(10)
                 .setOffset(null)
@@ -85,28 +50,10 @@ public class VkApiParserTest {
     }
 
     @Test
-    public void should_parse_content_when_offset_is_0() {
-        VkApiResult result = newResult();
-        VkApiParser parser = mockParser(result);
-        parser.parse(ParsingContext.builder()
-                .setSourceId(1)
-                .setLimit(10)
-                .setOffset(0L)
-                .setOnContentReceivedCallback(content -> {
-                    assertNotNull(content);
-                    assertEquals(2, content.getPosts().size());
-                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
-                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
-                    assertEquals(content.getNextOffset().longValue(), 0L);
-                })
-                .build());
-    }
-
-    @Test
     public void should_parse_content_sync_when_offset_is_0() {
         VkApiResult result = newResult();
         VkApiParser parser = mockParser(result);
-        Optional<Content> content = parser.parseSync(ParsingContext.builder()
+        Optional<Content> content = parser.parse(ParsingContext.builder()
                 .setSourceId(1)
                 .setLimit(10)
                 .setOffset(0L)
@@ -119,28 +66,10 @@ public class VkApiParserTest {
     }
 
     @Test
-    public void should_parse_content_when_offset_is_near_0() {
-        VkApiResult result = newResult();
-        VkApiParser parser = mockParser(result);
-        parser.parse(ParsingContext.builder()
-                .setSourceId(1)
-                .setLimit(10)
-                .setOffset(3L)
-                .setOnContentReceivedCallback(content -> {
-                    assertNotNull(content);
-                    assertEquals(2, content.getPosts().size());
-                    assertItem(result.getResponse().get().getItems().get(0), content.getPosts().get(0));
-                    assertItem(result.getResponse().get().getItems().get(1), content.getPosts().get(1));
-                    assertEquals(content.getNextOffset().longValue(), 0L);
-                })
-                .build());
-    }
-
-    @Test
     public void should_parse_content_sync_when_offset_is_near_0() {
         VkApiResult result = newResult();
         VkApiParser parser = mockParser(result);
-        Optional<Content> content = parser.parseSync(ParsingContext.builder()
+        Optional<Content> content = parser.parse(ParsingContext.builder()
                 .setSourceId(1)
                 .setLimit(10)
                 .setOffset(3L)
@@ -191,10 +120,6 @@ public class VkApiParserTest {
 
     private VkApiParser mockParser(VkApiResult result) {
         VkApiClient client = mock(VkApiClient.class);
-        doAnswer(invocation -> {
-            invocation.getArgumentAt(1, Consumer.class).accept(result);
-            return null;
-        }).when(client).getWall(any(), any());
         when(client.getWall(any())).thenReturn(result);
         return new VkApiParser(client);
     }
